@@ -1,0 +1,7 @@
+# eclipse
+.settings
+.classpath
+.buildpath
+
+# idea
+.idea
