@@ -1,7 +1,7 @@
 # eclipse
 .settings
 .classpath
-.buildpath
+.project
 
 # idea
 .idea
