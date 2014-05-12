@@ -33,11 +33,12 @@ public class Channel {
 	} 
 	
 	private String read() throws IOException {
-		ByteArrayOutputStream buffer = new ByteArrayOutputStream();		
-		for (int b; (b = reader.read()) != -1; ) {
+		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+		int b;
+		while ((b = reader.read()) != -1) {
 			if (b == '>') break;
 			buffer.write(b);
 		}
-		return new String(buffer.toByteArray()).trim();
+		return buffer.toString().trim();
 	}
 }
