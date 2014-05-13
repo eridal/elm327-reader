@@ -6,6 +6,6 @@ import elm327.reader.Channel;
 
 public interface Runner {
 
-	public String params();
-	Channel connect(String[] params) throws IOException;
+    public String params();
+    Channel connect(String[] params) throws IOException;
 }
