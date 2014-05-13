@@ -17,16 +17,6 @@ public class Channel {
 		this.writter = writter;
 	}
 	
-	public String send(String message) {
-		try {
-			write(message);
-			Thread.yield();
-			return read();
-		} catch (IOException e) {
-			throw Throwables.propagate(e);
-		}
-	}
-
 	private void write(String message) throws IOException {
 		writter.write(String.format("%s\r", message).getBytes());
 		writter.flush();
@@ -35,10 +25,56 @@ public class Channel {
 	private String read() throws IOException {
 		ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 		int b;
-		while ((b = reader.read()) != -1) {
-			if (b == '>') break;
+		
+		while (true) {
+
+			b = reader.read();
+			
+			if (b == -1 || 
+			    b == '>') {
+				break;
+			}
+
 			buffer.write(b);
 		}
+		
 		return buffer.toString().trim();
+	}
+	
+	private void flush() throws IOException {
+		while (reader.available() > 0) {
+			reader.read();
+		}
+	}
+
+	public void send(String message) {
+		try {
+			write(message);
+			flush();
+		} catch (IOException e) {
+			throw Throwables.propagate(e);
+		}
+	}
+	
+	public void setBoolean(String message, boolean value) {
+		try {
+			write(message + translate(value));
+			flush();
+		} catch (IOException e) {
+			throw Throwables.propagate(e);
+		}
+	}
+	
+	public String getString(String message) {
+		try {
+			write(message);
+			return read();
+		} catch (IOException e) {
+			throw Throwables.propagate(e);
+		}
+	}
+	
+	private char translate (boolean value) {
+		return value ? '1' : '0';
 	}
 }

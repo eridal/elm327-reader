@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 
 import elm327.reader.runner.FileRunner;
@@ -42,26 +43,25 @@ public class Main {
 		try {
 			chan = runner.connect(params);
 		} catch(IOException e) {
-			e.printStackTrace(System.err);
-			return;
+			throw Throwables.propagate(e);
 		}
 		
-		chan.send("ATZ");  // Reset
-		chan.send("ATL0"); // Linefeed disabled
-		chan.send("ATE0"); // Echo disabled
+		chan.send("ATZ");  			    // Reset
+		chan.setBoolean("ATL", false);  // Linefeed
+		chan.setBoolean("ATE0", false); // Echo
 		
 		// Device info
-		System.out.println(String.format("Device: %s", chan.send("AT@1")));
-		System.out.println(String.format("Identifier: %s", chan.send("AT@2")));
+		System.out.println(String.format("Device: %s"    , chan.getString("AT@1")));
+		System.out.println(String.format("Identifier: %s", chan.getString("AT@2")));
 		
-		System.out.println(String.format("Protocol: %s (%s)", chan.send("ATDP"),    // proto name
-														      chan.send("ATDPN"))); // proto number
+		System.out.println(String.format("Protocol: %s (%s)", chan.getString("ATDP"),    // proto name
+														      chan.getString("ATDPN"))); // proto number
 		
 		System.out.println("\nValues:");
 		
 		while (true) {
 			for (Entry<String, String> entry: commands.entrySet()) {
-				System.out.println(String.format("  %s: %s", entry.getValue(), chan.send(entry.getKey())));
+				System.out.println(String.format("  %s: %s", entry.getValue(), chan.getString(entry.getKey())));
 			}
 			System.out.println(" --");
 			break;
