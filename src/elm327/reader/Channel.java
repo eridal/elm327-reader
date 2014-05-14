@@ -11,7 +11,7 @@ public class Channel {
 
     private InputStream reader;
     private OutputStream writter;
-
+    
     public Channel(InputStream reader, OutputStream writter) {
         this.reader = reader;
         this.writter = writter;
