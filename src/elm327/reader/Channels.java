@@ -7,7 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-public class Channels {
+class Channels {
     
     public static Channel fromFile(File file) throws FileNotFoundException {
         return new Channel(new FileInputStream(file),

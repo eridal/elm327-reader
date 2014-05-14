@@ -1,6 +1,6 @@
 package elm327.reader;
 
-public enum PID {
+enum PID {
 
     PIDS_SUPPORT_FROM_01_TO_20      ("0100", "PIDs supported [01 - 20]"),
     PIDS_SUPPORT_FROM_21_TO_40      ("0120", "PIDs supported [21 - 40]"),

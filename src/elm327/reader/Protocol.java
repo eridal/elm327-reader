@@ -1,6 +1,5 @@
 package elm327.reader;
 
-
 class Protocol {
     
     /**

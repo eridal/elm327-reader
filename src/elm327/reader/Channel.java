@@ -1,5 +1,6 @@
 package elm327.reader;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,13 +8,13 @@ import java.io.OutputStream;
 
 import com.google.common.base.Throwables;
 
-public class Channel {
+class Channel {
 
     private InputStream reader;
     private OutputStream writter;
     
     public Channel(InputStream reader, OutputStream writter) {
-        this.reader = reader;
+        this.reader = new BufferedInputStream(reader);
         this.writter = writter;
         flush();
     }
@@ -26,21 +27,20 @@ public class Channel {
 
     private String read() throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        
-        for (int b; (b = reader.read()) != -1;) {
-            if (b == '>') {
+        int b;
+        while ((b = reader.read()) != -1) {
+            if (b == 0 || b == '>') {
                 break;
             }
             buffer.write(b);
         }
-
         return buffer.toString();
     }
     
     private void flush() {
         try {
             while (reader.available() > 0) {
-                reader.skip(reader.available());
+                reader.read();
             }
         } catch(IOException e) {
             throw Throwables.propagate(e);
