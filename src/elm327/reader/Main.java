@@ -31,40 +31,29 @@ public class Main {
         executeRunner(runners.get(mode), params);
     }
 
-    private static final Map<String, String> commands = new ImmutableMap.Builder<String, String>()
-            .put("IGN", "Ignition")
-            .put("RV", "Volts")
-            .put("RD", "Data")
-            .build();
-
     private static void executeRunner(Runner runner, String[] params) {
 
-        Channel chan;
+        Protocol proto;
+        
         try {
-            chan = runner.connect(params);
-        } catch(IOException e) {
+            proto = new Protocol(runner.connect(params));
+        } catch (IOException e) {
             throw Throwables.propagate(e);
         }
-
-        chan.send("ATZ");                  // Reset
-        chan.setBoolean("ATL", false);  // Linefeed
-        chan.setBoolean("ATE0", false); // Echo
-
+        
         // Device info
-        System.out.println(String.format("Device: %s"    , chan.getString("AT@1")));
-        System.out.println(String.format("Identifier: %s", chan.getString("AT@2")));
+        System.out.println(String.format("Device: %s"    , proto.getDeviceName()));
+        System.out.println(String.format("Identifier: %s", proto.getDeviceIdentifier()));
 
-        System.out.println(String.format("Protocol: %s (%s)", chan.getString("ATDP"),    // proto name
-                                                              chan.getString("ATDPN"))); // proto number
-
+        System.out.println(String.format("Protocol: %s (%s)", proto.getProtocolName(),    // proto name
+                                                              proto.getProtocolNumber())); // proto number
         System.out.println("\nValues:");
 
         while (true) {
-            for (Entry<String, String> entry: commands.entrySet()) {
-                System.out.println(String.format("  %s: %s", entry.getValue(), chan.getString(entry.getKey())));
+            for (PID pid : PID.values()) {
+                System.out.println(String.format("  %s: %s", pid.name(), proto.getValue(pid)));
             }
             System.out.println(" --");
-            break;
         }
     }
 
