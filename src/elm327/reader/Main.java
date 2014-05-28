@@ -25,9 +25,10 @@ public class Main {
             return;
         }
 
-        String mode = args[0];
+        Mode mode = MODES.get(args[0]);
         String[] params = Arrays.copyOfRange(args, 1, args.length);
-        executeMode(MODES.get(mode), params);
+
+        executeMode(mode, params);
     }
 
     private static void executeMode(Mode runner, String[] params) {
@@ -35,7 +36,8 @@ public class Main {
         Protocol proto;
         
         try {
-            proto = new Protocol(runner.connect(params));
+            Channel channel = runner.connect(params);
+            proto = new Protocol(channel);
         } catch (IOException e) {
             throw Throwables.propagate(e);
         }
@@ -49,6 +51,10 @@ public class Main {
         System.out.println("\nValues:");
 
         while (true) {
+            System.out.println(String.format(" Volts: %s", proto.getVolts()));
+            System.out.println(String.format(" Ignition: %s", proto.getIgnition()));
+            System.out.println(String.format(" Data: %s", proto.getData()));
+            System.out.println(" PIDs:");
             for (PID pid : PID.values()) {
                 System.out.println(String.format("  %s: %s", pid.name(), proto.getValue(pid)));
             }

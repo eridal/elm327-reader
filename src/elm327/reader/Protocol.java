@@ -1,5 +1,7 @@
 package elm327.reader;
 
+import com.google.common.base.Strings;
+
 class Protocol {
     
     /**
@@ -12,11 +14,16 @@ class Protocol {
         configure();
     }
     
+    private final String[] CONFIGURE = {
+        "ATZ",  // reset
+        "ATL0", // disable line feeds
+        "ATE0",  // disable echo
+    };
+    
     private void configure() {
-        channel.send("ATZ");       // reset
-        channel.send("ATSP3");     // set ISO 9141-2 protocol
-        channel.send("ATL", false);// disable line feeds
-        channel.send("ATE", false);// disable echo
+        for (String cmd : CONFIGURE) {
+            System.out.println(String.format("%s -> %s", cmd, channel.read(cmd)));
+        }
     }
 
     public String getDeviceName() {
@@ -48,6 +55,12 @@ class Protocol {
     }
 
     public String getValue(PID pid) {
-        return channel.read(pid.code);
+        String hex = channel.read(pid.code);
+        
+        if (Strings.isNullOrEmpty(hex)) {
+            return null;
+        }
+
+        return String.valueOf(pid.parse(hex));
     }
 }

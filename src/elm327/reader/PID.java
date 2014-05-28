@@ -1,5 +1,8 @@
 package elm327.reader;
 
+import com.google.common.base.Function;
+import com.google.common.base.Splitter;
+
 enum PID {
 
     PIDS_SUPPORT_FROM_01_TO_20      ("0100", "PIDs supported [01 - 20]"),
@@ -11,7 +14,11 @@ enum PID {
     ENGINE_COOLANT_TEMP             ("0105", "Engine coolant temperature"),
     SHORT_TERM_FUEL                 ("0106", "Short term fuel % trim—Bank 1"),
     LONG_TERM_FUEL                  ("0107", "Long term fuel % trim—Bank 1"),
-    ENGINE_RPM                      ("010C", "Engine RPM"),
+    ENGINE_RPM                      ("010C", "Engine RPM", new Function<int[], Object>() {
+        @Override public Integer apply(int[] bytes) {
+            return ((bytes[1] * 256) + bytes[1]) / 4;
+        }
+    }),
     VEHICLE_SPEED                   ("010D", "Vehicle speed"),
     TIMING_ADVANCE                  ("010E", "Timing advance"),
     INTAKE_AIR_TEMPERATURE          ("010F", "Intake air temperature"),
@@ -25,13 +32,35 @@ enum PID {
 
     public final String code;
     public final String desc;
+    public final Function<int[], Object> converter;
 
-    PID(String code) {
-        this(code, null);
-    }
-    
     PID (String code, String desc) {
+        this(code, desc, null);
+    }
+
+    PID (String code, String desc, Function<int[], Object> converter) {
         this.code = code;
         this.desc = desc;
+        this.converter = converter;
     }
+    
+    public Object parse(String hex) {
+        return converter.apply(
+            PARSER.apply(hex)
+        );
+    }
+    
+    /**
+     * The parse 
+     */
+    private static final Function<String, int[]> PARSER = new Function<String, int []>() {
+        @Override public int[] apply(String hex) {
+            int i = 0;
+            int[] bytes = new int[4];
+            for (String h: Splitter.on(" ").split(hex)) {
+                bytes[i++] = Integer.valueOf(h, 16); 
+            }   
+            return bytes;
+        }
+    };
 }

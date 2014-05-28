@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 
 class Channel {
@@ -29,7 +30,7 @@ class Channel {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int b;
         while ((b = reader.read()) != -1) {
-            if (b == 0 || b == '>') {
+            if (b == '>') {
                 break;
             }
             buffer.write(b);
@@ -38,16 +39,46 @@ class Channel {
     }
     
     private void flush() {
+        StringBuffer buffer = new StringBuffer();
         try {
             while (reader.available() > 0) {
-                reader.read();
+                int b = reader.read();
+                if (b != -1) {
+                    buffer.append(b);
+                } else {
+                    break;
+                }
             }
         } catch(IOException e) {
             throw Throwables.propagate(e);
         }
+        if (buffer.length() > 0) {
+            System.out.println(String.format("discarded: %s", buffer.toString()));
+        }
     }
 
-    public void send(String command) {
+    private String extractCommand(String command, String result) {
+        if (result.startsWith(command)) {
+            return result.substring(command.length());
+        }
+        return result;
+        
+    }
+
+    private String handleResult(String result) {
+        if (Strings.isNullOrEmpty(result)) {
+            return null;
+        }
+        if (Result.UNKNOWN.matches(result)) {
+            return null;
+        }
+        if (Result.NO_DATA.matches(result)) {
+            return null;
+        }
+        return result.trim();
+    }
+
+    public String read(String command) {
         String result;
         try {
             write(command);
@@ -56,31 +87,16 @@ class Channel {
             throw Throwables.propagate(e);
         }
 
-        checkResultMatchesCommand(command, result);
+        return handleResult(
+            extractCommand(command, result)
+        );
     }
     
-    public void send(String command, boolean value) {
-        send(String.format("%s%c", command , value ? '1' : '0'));
+    public boolean send(String command) {
+        return Result.OK.matches(read(command));
     }
     
-    private void checkResultMatchesCommand(String command, String result) {
-        if (!result.startsWith(command)) {
-            throw new IllegalStateException();
-        }
-        String resultCode = result.substring(command.length()).trim(); 
-        System.out.println(String.format("%s -> %s", command, resultCode));
-    }
-
-    public String read(String command) {
-        try {
-            write(command);
-            return read();
-        } catch (IOException e) {
-            throw Throwables.propagate(e);
-        }
-    }
-    
-    public String read(PID pid) {
-        return read(pid.code);
+    public boolean send(String command, boolean value) {
+        return send(String.format("%s%c", command , value ? '1' : '0'));
     }
 }
