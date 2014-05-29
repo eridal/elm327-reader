@@ -55,8 +55,8 @@ public class Main {
             System.out.println(String.format(" Ignition: %s", proto.getIgnition()));
             System.out.println(String.format(" Data: %s", proto.getData()));
             System.out.println(" PIDs:");
-            for (PID pid : PID.values()) {
-                System.out.println(String.format("  %s: %s", pid.name(), proto.getValue(pid)));
+            for (PID<?> pid : PID.values()) {
+                System.out.println(String.format("  %s", proto.getValue(pid)));
             }
             System.out.println(" --");
         }

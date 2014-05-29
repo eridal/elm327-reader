@@ -54,13 +54,13 @@ class Protocol {
         return channel.read("ATRD");
     }
 
-    public String getValue(PID pid) {
+    public <T> T getValue(PID<T> pid) {
         String hex = channel.read(pid.code);
         
         if (Strings.isNullOrEmpty(hex)) {
             return null;
         }
 
-        return String.valueOf(pid.parse(hex));
+        return pid.parse(hex);
     }
 }
