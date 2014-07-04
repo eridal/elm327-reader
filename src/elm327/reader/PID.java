@@ -8,21 +8,16 @@ class PID<T> {
     private static final Function<String, int[]> TO_INTS = new Function<String, int[]>() {
         @Override public int[] apply(String hex) {
             int i = 0;
-            int[] bytes = new int[4];
+            int bytesCount = hex.replaceAll("[0-9A-Fa-f]+", "").length() + 1;
+            int[] bytes = new int[bytesCount];
             for (String h : Splitter.on(" ").split(hex)) {
-                bytes[i++] = Integer.valueOf(h, 16);
+                assert i <= bytes.length;
+                bytes[i++] = Integer.valueOf(h.substring(0, 2), 16);
             }
             return bytes;
         }
     };
 
-    private static final Function<String, boolean[]> TO_BOOLEANS = new Function<String, boolean[]>() {
-        @Override public boolean[] apply(String hex) {
-            boolean[] flags = new boolean[20];
-            return flags;
-        }
-    };
-    
     private static final <R> Function<String, R> WITH_INTS(final Function<int[], R> fn) {
         return new Function<String, R>() {
             @Override public R apply(String hex) {
@@ -70,8 +65,6 @@ class PID<T> {
         }
     });
     
-    public static final PID<boolean[]> PIDS_SUPPORT_FROM_01_TO_20 = new PID<boolean[]>("0100", "PIDs supported [01 - 20]", "", TO_BOOLEANS);
-    public static final PID<boolean[]> PIDS_SUPPORT_FROM_21_TO_40 = new PID<boolean[]>("0120", "PIDs supported [21 - 40]", "", TO_BOOLEANS);
     // Includes malfunction indicator lamp (MIL) status and number of DTCs.
     public static final PID<String> MONITOR_STATUS_SINCE_DTC_CLEARED = new PID<String>("0101", "Monitor status since DTCs cleared", "", RETURNS_STRING);
     public static final PID<String> FUEL_SYSTEM_STATUS = new PID<String>("0103","Fuel system status", "", RETURNS_STRING);
@@ -135,10 +128,6 @@ class PID<T> {
     public static final PID<Integer> RUNTIME_SINCE_ENGINE_START = new PID<Integer>("011F", "Run time since engine start", "s", RETURNS_SHORT);
     
     public static final PID<Integer> DISTANCE_TRAVELED_WITH_LAMP_ON = new PID<Integer>("0121", "Distance traveled with malfunction indicator lamp (MIL) on", "Km", RETURNS_SHORT);
-
-    public static PID<?>[] values() {
-        return PID.class.getEnumConstants();
-    }
 
     public final String code;
     public final String desc;

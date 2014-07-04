@@ -66,7 +66,9 @@ class Channel {
     }
 
     private String handleResult(String result) {
-        if (Strings.isNullOrEmpty(result)) {
+        
+        if (Strings.isNullOrEmpty(result) ||
+            Strings.isNullOrEmpty(result = result.trim())) {
             return null;
         }
         if (Result.UNKNOWN.matches(result)) {
@@ -75,7 +77,7 @@ class Channel {
         if (Result.NO_DATA.matches(result)) {
             return null;
         }
-        return result.trim();
+        return result;
     }
 
     public String read(String command) {

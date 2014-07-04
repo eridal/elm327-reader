@@ -31,6 +31,35 @@ public class Main {
         executeMode(mode, params);
     }
 
+    private final static PID<?>[] PIDS = new PID[] {
+        PID.VEHICLE_SPEED,
+        PID.ENGINE_RPM,
+        PID.FUEL_PRESSURE,
+        PID.ENGINE_LOAD_VALUE,
+        PID.ENGINE_COOLANT_TEMP,
+        PID.THROTTLE_POSITION,
+        
+        PID.AIR_FLOW_RATE,
+        PID.BANK_1_SENSOR_1,
+        PID.BANK_1_SENSOR_2,
+        PID.BANK_1_SENSOR_3,
+        PID.BANK_1_SENSOR_4,
+        PID.BANK_2_SENSOR_1,
+        PID.BANK_2_SENSOR_2,
+        PID.BANK_2_SENSOR_3,
+        PID.BANK_2_SENSOR_4,
+        PID.DISTANCE_TRAVELED_WITH_LAMP_ON,
+        PID.FUEL_SYSTEM_STATUS,
+        PID.INTAKE_AIR_TEMPERATURE,
+        PID.LONG_TERM_FUEL_BANK_1,
+        PID.LONG_TERM_FUEL_BANK_2,
+        PID.MONITOR_STATUS_SINCE_DTC_CLEARED,
+        PID.ODB_STANDARD,
+        PID.SHORT_TERM_FUEL_BANK_1,
+        PID.SHORT_TERM_FUEL_BANK_2,
+        PID.TIMING_ADVANCE,        
+    };
+
     private static void executeMode(Mode runner, String[] params) {
 
         Protocol proto;
@@ -55,9 +84,11 @@ public class Main {
             System.out.println(String.format(" Ignition: %s", proto.getIgnition()));
             System.out.println(String.format(" Data: %s", proto.getData()));
             System.out.println(" PIDs:");
-            for (PID<?> pid : PID.values()) {
-                System.out.println(String.format("  %s", proto.getValue(pid)));
+            
+            for (PID<?> pid : PIDS) {
+                System.out.println(String.format("%s: %s %s", pid.code, proto.getValue(pid), pid.unit));
             }
+
             System.out.println(" --");
         }
     }
