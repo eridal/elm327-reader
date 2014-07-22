@@ -5,4 +5,4 @@ MANIFEST=Manifest.txt
 
 jar: ${BIN_FOLDER}
 	rm -f ${JAR_FILE}
-	jar -c -v -m ${MANIFEST} -f ${JAR_FILE} -C ${BIN_FOLDER} . 
+	jar -c -m ${MANIFEST} -f ${JAR_FILE} -C ${BIN_FOLDER} .
