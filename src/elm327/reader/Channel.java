@@ -11,9 +11,9 @@ import com.google.common.base.Throwables;
 
 class Channel {
 
-    private InputStream reader;
-    private OutputStream writter;
-    
+    private final InputStream reader;
+    private final OutputStream writter;
+
     public Channel(InputStream reader, OutputStream writter) {
         this.reader = new BufferedInputStream(reader);
         this.writter = writter;
@@ -37,36 +37,43 @@ class Channel {
         }
         return buffer.toString();
     }
-    
+
     private void flush() {
-        StringBuffer buffer = new StringBuffer();
         try {
             while (reader.available() > 0) {
                 int b = reader.read();
-                if (b != -1) {
-                    buffer.append(b);
-                } else {
+                if (b == -1) {
                     break;
                 }
             }
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw Throwables.propagate(e);
-        }
-        if (buffer.length() > 0) {
-            System.out.println(String.format("discarded: %s", buffer.toString()));
         }
     }
 
-    private String extractCommand(String command, String result) {
+    private String writeAndRead(String command) {
+        String result;
+        try {
+            write(command);
+            result = read();
+        } catch (IOException e) {
+            throw Throwables.propagate(e);
+        }
+
+        return handleResult(
+            extractCommand(command, result)
+        );
+    }
+
+    private static String extractCommand(String command, String result) {
         if (result.startsWith(command)) {
             return result.substring(command.length());
         }
         return result;
-        
+
     }
 
-    private String handleResult(String result) {
-        
+    private static String handleResult(String result) {
         if (Strings.isNullOrEmpty(result) ||
             Strings.isNullOrEmpty(result = result.trim())) {
             return null;
@@ -80,25 +87,21 @@ class Channel {
         return result;
     }
 
-    public String read(String command) {
-        String result;
-        try {
-            write(command);
-            result = read();
-        } catch (IOException e) {
-            throw Throwables.propagate(e);
-        }
+    public String read(Command c) {
+        return writeAndRead(c.toString());
+    }
 
-        return handleResult(
-            extractCommand(command, result)
-        );
+    public <T> T read(Command.Read<T> c) {
+        final String result = writeAndRead(c.toString());
+        return c.parse(result);
     }
-    
-    public boolean send(String command) {
-        return Result.OK.matches(read(command));
+
+    public <T> T read(PID<T> pid) {
+        final String result = writeAndRead(pid.toString());
+        return pid.parse(result);
     }
-    
-    public boolean send(String command, boolean value) {
-        return send(String.format("%s%c", command , value ? '1' : '0'));
+
+    public boolean send(Command c) {
+        return Result.OK.matches(read(c));
     }
 }
