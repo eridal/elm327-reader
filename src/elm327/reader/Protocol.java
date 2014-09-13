@@ -1,7 +1,5 @@
 package elm327.reader;
 
-import java.util.ArrayList;
-import java.util.List;
 
 class Protocol {
 
@@ -24,25 +22,29 @@ class Protocol {
         initialize(setup);
     }
 
-    public String[] initialize(Command ... setup) {
-        List<String> result = new ArrayList<String>();
-
+    public void initialize(Command ... setup) {
         for (Command cmd : setup) {
-            result.add(channel.read(cmd));
+            channel.send(cmd);
         }
-
-        return result.toArray(new String[0]);
     }
 
     public String get(Command.Get command) {
-        return channel.read(command);
+        return channel.send(command);
+    }
+
+    public boolean send(Command.Send command) {
+        return Result.OK.matches(
+            channel.send(command)
+        );
     }
 
     public <T> T read(Command.Read<T> command) {
-        return channel.read(command);
+        String result = channel.send(command);
+        return command.parse(result);
     }
 
-    public <T> T read(final PID<T> pid) {
-        return channel.read(pid);
+    public <T> T read(PID<T> pid) {
+        String result = channel.send(pid);
+        return pid.parse(result);
     }
 }

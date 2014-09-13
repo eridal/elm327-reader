@@ -20,7 +20,8 @@ class Channel {
         flush();
     }
 
-    private void write(String message) throws IOException {
+    private void write(Command c) throws IOException {
+        String message = c.toCommandString();
         writter.write(message.getBytes());
         writter.write('\r');
         writter.flush();
@@ -28,10 +29,21 @@ class Channel {
 
     private String read() throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        int b;
-        while ((b = reader.read()) != -1) {
-            if (b == '>') {
+
+        for (int b;;) {
+            if (reader.available() == 0 && buffer.size() > 0) {
                 break;
+            }
+            b = reader.read();
+            if (b == -1) {
+                break;
+            }
+            if (b == '>') {
+                if (buffer.size() == 0) {
+                    continue;
+                } else {
+                    break;
+                }
             }
             buffer.write(b);
         }
@@ -51,26 +63,21 @@ class Channel {
         }
     }
 
-    private String writeAndRead(String command) {
-        String result;
+    private String writeAndRead(Command cmd) {
         try {
-            write(command);
-            result = read();
+            write(cmd);
+            return read();
         } catch (IOException e) {
             throw Throwables.propagate(e);
         }
-
-        return handleResult(
-            extractCommand(command, result)
-        );
     }
 
-    private static String extractCommand(String command, String result) {
-        if (result.startsWith(command)) {
-            return result.substring(command.length());
+    private static String extractCommand(Command cmd, String result) {
+        String message = cmd.toCommandString();
+        if (result.startsWith(message)) {
+            return result.substring(message.length());
         }
         return result;
-
     }
 
     private static String handleResult(String result) {
@@ -87,21 +94,10 @@ class Channel {
         return result;
     }
 
-    public String read(Command c) {
-        return writeAndRead(c.toString());
-    }
-
-    public <T> T read(Command.Read<T> c) {
-        final String result = writeAndRead(c.toString());
-        return c.parse(result);
-    }
-
-    public <T> T read(PID<T> pid) {
-        final String result = writeAndRead(pid.toString());
-        return pid.parse(result);
-    }
-
-    public boolean send(Command c) {
-        return Result.OK.matches(read(c));
+    public String send(Command cmd) {
+        String result = writeAndRead(cmd);
+        return handleResult(
+            extractCommand(cmd, result)
+        );
     }
 }
