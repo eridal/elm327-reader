@@ -46,22 +46,9 @@ public interface Command {
         }
     }
 
-    public enum Set implements Command {
-        AllToDefaults("D");
-
-        final String code;
-
-        Set(String cmd) {
-            code = "AT" + cmd;
-        }
-
-        @Override public String toCommandString() {
-            return code;
-        }
-    }
-
     public enum Do implements Command {
-        Reset("Z");
+        Reset("Z"),
+        SetAllToDefaults("D");
 
         private final String code;
 
@@ -74,62 +61,67 @@ public interface Command {
         }
     }
 
-    public enum Disable implements Command {
-        Echo(Action.Echo),
-        LineFeeds(Action.LineFeeds),
-        PrintSpaces(Action.PrintSpaces);
+    public class Disable extends Send {
+
+        public static final Disable Echo = new Disable(Action.Echo);
+        public static final Disable PrintSpaces = new Disable(Action.PrintSpaces);
+        public static final Disable LineFeeds = new Disable(Action.LineFeeds);
+
+        private Disable(Send.Action action) {
+            super(action, Param.NO);
+        }
+    }
+
+    public class Enable extends Send {
+
+        public static final Enable Echo = new Enable(Action.Echo);
+        public static final Enable PrintSpaces = new Enable(Action.PrintSpaces);
+        public static final Enable LineFeeds = new Enable(Action.LineFeeds);
+
+        private Enable(Action action) {
+            super(action, Param.YES);
+        }
+    }
+
+    public class Send implements Command {
 
         private final Action action;
+        private final Param param;
 
-        Disable(Action action) {
+        public Send(Action action, Param param) {
             this.action = action;
+            this.param = param;
         }
 
         @Override public String toCommandString() {
-            return String.format("AT%s", action.toCommandString(Param.NO));
-        }
-    }
-
-    public enum Enable implements Command {
-        Echo(Action.Echo),
-        LineFeeds(Action.LineFeeds),
-        PrintSpaces(Action.PrintSpaces);
-
-        private final Action action;
-
-        Enable(Action action) {
-            this.action = action;
+            return String.format("AT%s", action.toCommandString(param));
         }
 
-        @Override public String toCommandString() {
-            return String.format("AT%s", action.toCommandString(Param.YES));
+        enum Action {
+          LineFeeds("E"),
+          Echo("E"),
+          PrintSpaces("S");
+
+          private final String code;
+
+          Action(String code) {
+              this.code = code;
+          }
+
+          public String toCommandString(Param p) {
+              return String.format("%s%s", code, p.value);
+          }
         }
-    }
 
-    enum Action {
-      LineFeeds("E"),
-      Echo("E"),
-      PrintSpaces("S");
+        enum Param {
+            NO ("0"),
+            YES("1");
 
-      private final String code;
+            final public String value;
 
-      Action(String code) {
-          this.code = code;
-      }
-
-      public String toCommandString(Param p) {
-          return String.format("%s%s", code, p.value);
-      }
-    }
-
-    enum Param {
-        NO ("0"),
-        YES("1");
-
-        final public String value;
-
-        Param(String value) {
-            this.value = value;
+            Param(String value) {
+                this.value = value;
+            }
         }
     }
 }

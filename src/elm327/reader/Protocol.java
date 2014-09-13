@@ -6,16 +6,13 @@ import java.util.List;
 class Protocol {
 
     static final Command[] DEFAULT_SETUP = {
-        Command.Set.AllToDefaults,
+        Command.Do.SetAllToDefaults,
         Command.Do.Reset,
         Command.Disable.LineFeeds,
         Command.Disable.Echo,
         Command.Disable.PrintSpaces,
     };
 
-    /**
-     * The current channel
-     */
     private final Channel channel;
 
     public Protocol (Channel channel) {
