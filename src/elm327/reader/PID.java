@@ -3,7 +3,7 @@ package elm327.reader;
 import com.google.common.base.Function;
 import com.google.common.base.Splitter;
 
-class PID<T> implements Command {
+class PID<T> implements Command<T> {
 
     private static final Function<String, byte[]> TO_BYTES = new Function<String, byte[]>() {
         @Override public byte[] apply(String hex) {
@@ -161,11 +161,15 @@ class PID<T> implements Command {
         this.converter = converter;
     }
 
-    public T parse(String hex) {
+    @Override public T parse(String hex) {
         return converter.apply(hex);
     }
 
-    @Override public String toCommandString() {
+    @Override public String toMessage() {
         return code;
+    }
+
+    @Override public boolean matches(String message) {
+        return code == message;
     }
 }
