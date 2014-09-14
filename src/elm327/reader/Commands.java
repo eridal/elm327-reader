@@ -27,45 +27,53 @@ public class Commands {
         }
     }
 
-    static class Read implements Command<Float> {
-
-        public static final Read Voltage = new Read("RV");
-        public static final Read Ignition = new Read("IGN") {
-            private final String OBDSIM_BUG = "ELM327 v1.3a OBDGPSLogger";
-            @Override public Float parse(String data) {
-                if (OBDSIM_BUG.equals(data)) {
-                    return 0.0f;
-                }
-                return super.parse(data);
-            }
-        };
+    static class Read<T> implements Command<T> {
 
         private final String code;
+        private final Function<String, T> parser;
 
-        private Read(String cmd) {
-            code = Obd2.AT(cmd);
+        private Read(String cmd, Function<String, T> parser) {
+            this.code = Obd2.AT(cmd);
+            this.parser = parser;
         }
 
         @Override public String toMessage() {
             return code;
         }
 
-        Function<String, Float> PARSER = new Function<String, Float>() {
-            @Override public Float apply(String data) {
-                return Float.valueOf(data);
+        @Override public T parse(String data) {
+            return parser.apply(data);
+        }
+
+        static class Computer extends Read<Float> {
+
+            private Computer(String cmd, Function<String, Float> parser) {
+                super(cmd, parser);
             }
-        };
 
+            private static final Function<String, Float> PARSER = new Function<String, Float>() {
+                @Override public Float apply(String data) {
+                    return Float.valueOf(data);
+                }
+            };
 
-
-        @Override public Float parse(String data) {
-            return PARSER.apply(data);
+            public static final Command<Float> Voltage = new Computer("RV", PARSER);
+            public static final Command<Float> Ignition = new Computer("IGN", PARSER) {
+                private final String OBDSIM_BUG = "ELM327 v1.3a OBDGPSLogger";
+                @Override public Float parse(String data) {
+                    if (OBDSIM_BUG.equals(data)) {
+                        return 0.0f;
+                    }
+                    return super.parse(data);
+                }
+            };
         }
     }
 
     static enum Send implements Command<String> {
-        Reset("Z"),
-        Defaults("D");
+        FullReset("Z"),
+        WarmStart("WS"),
+        SetDefaults("D");
 
         private final String code;
 

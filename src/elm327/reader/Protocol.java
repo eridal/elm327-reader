@@ -5,7 +5,7 @@ import java.io.IOException;
 class Protocol {
 
     static final Command<?>[] DEFAULT_SETUP = {
-        Commands.Send.Reset,
+        Commands.Send.FullReset,
         Commands.Disable.Echo,
         Commands.Disable.LineFeeds,
         Commands.Disable.PrintSpaces,

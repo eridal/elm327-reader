@@ -82,8 +82,8 @@ public class Main {
         System.out.println("\nValues:");
 
         while (true) {
-            System.out.println(String.format(" Volts: %s", proto.read(Commands.Read.Voltage)));
-            System.out.println(String.format(" Ignition: %s", proto.read(Commands.Read.Ignition)));
+            System.out.println(String.format(" Ignition: %s", proto.read(Commands.Read.Computer.Ignition)));
+            System.out.println(String.format(" Voltage: %s" , proto.read(Commands.Read.Computer.Voltage)));
             System.out.println(" PIDs:");
 
             for (PID<?> pid : PIDS) {

@@ -42,8 +42,8 @@ public class Debug {
             .build();
 
     private static final Map<String, Command<?>> VALUES = new ImmutableMap.Builder<String, Command<?>>()
-            .put("Ignition", Commands.Read.Ignition)
-            .put("Voltage", Commands.Read.Voltage)
+            .put("Ignition", Commands.Read.Computer.Ignition)
+            .put("Voltage", Commands.Read.Computer.Voltage)
             .build();
 
     private static final Map<String, Command<?>> PIDS = new ImmutableMap.Builder<String, Command<?>>()
