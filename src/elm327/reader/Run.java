@@ -67,12 +67,12 @@ public class Run {
         }
 
         private static final Map<String, Command<?>> HEADERS = new ImmutableMap.Builder<String, Command<?>>()
-                .put("Device", Command.Get.DeviceName)
+                .put("Device", Commands.Get.DeviceName)
                 .build();
 
         private static final Map<String, Command<?>> VALUES = new ImmutableMap.Builder<String, Command<?>>()
-                .put("Ignition", Command.Read.IgnitionInputLevel)
-                .put("Voltage", Command.Read.Voltage)
+                .put("Ignition", Commands.Read.IgnitionInputLevel)
+                .put("Voltage", Commands.Read.Voltage)
                 .build();
 
         private static final Map<String, Command<?>> PIDS = new ImmutableMap.Builder<String, Command<?>>()

@@ -5,10 +5,10 @@ import java.io.IOException;
 class Protocol {
 
     static final Command<?>[] DEFAULT_SETUP = {
-        Command.Do.Reset,
-        Command.Disable.Echo,
-        Command.Disable.LineFeeds,
-        Command.Disable.PrintSpaces,
+        Commands.Send.Reset,
+        Commands.Disable.Echo,
+        Commands.Disable.LineFeeds,
+        Commands.Disable.PrintSpaces,
     };
 
     private final Channel channel;
