@@ -4,10 +4,9 @@ package elm327.reader;
 class Protocol {
 
     static final Command[] DEFAULT_SETUP = {
-        Command.Do.SetAllToDefaults,
         Command.Do.Reset,
-        Command.Disable.LineFeeds,
         Command.Disable.Echo,
+        Command.Disable.LineFeeds,
         Command.Disable.PrintSpaces,
     };
 
@@ -23,6 +22,7 @@ class Protocol {
     }
 
     public void initialize(Command ... setup) {
+        channel.flush();
         for (Command cmd : setup) {
             channel.send(cmd);
         }
@@ -43,8 +43,7 @@ class Protocol {
         return command.parse(result);
     }
 
-    public <T> T read(PID<T> pid) {
-        String result = channel.send(pid);
-        return pid.parse(result);
+    public <T> String read(PID<T> pid) {
+        return channel.send(pid);
     }
 }

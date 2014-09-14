@@ -17,10 +17,10 @@ class Channel {
     public Channel(InputStream reader, OutputStream writter) {
         this.reader = new BufferedInputStream(reader);
         this.writter = writter;
-        flush();
     }
 
     private void write(Command c) throws IOException {
+        flush();
         String message = c.toCommandString();
         writter.write(message.getBytes());
         writter.write('\r');
@@ -30,11 +30,11 @@ class Channel {
     private String read() throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 
-        for (int b;;) {
+        for (;;) {
             if (reader.available() == 0 && buffer.size() > 0) {
                 break;
             }
-            b = reader.read();
+            int b = reader.read();
             if (b == -1) {
                 break;
             }
