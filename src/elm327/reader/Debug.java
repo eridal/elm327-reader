@@ -38,7 +38,8 @@ public class Debug {
     }
 
     private static final Map<String, Command<?>> HEADERS = new ImmutableMap.Builder<String, Command<?>>()
-            .put("Device", Commands.Get.DeviceName)
+            .put("Device", Commands.Read.Info.DeviceName)
+            .put("Protocol", Commands.Read.Info.ProtocolName)
             .build();
 
     private static final Map<String, Command<?>> VALUES = new ImmutableMap.Builder<String, Command<?>>()

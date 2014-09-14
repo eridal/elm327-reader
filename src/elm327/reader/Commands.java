@@ -1,39 +1,19 @@
 package elm327.reader;
 
 import com.google.common.base.Function;
+import com.google.common.base.Functions;
 
 public class Commands {
 
     private Commands() { }
-
-    static enum Get implements Command<String> {
-        DeviceName("@1"),
-        DeviceIdentifier("@2"),
-        ProtocolName("DP"),
-        ProtocolCode("DPN");
-
-        private final String code;
-
-        private Get(String cmd) {
-            code = Obd2.AT(cmd);
-        }
-
-        @Override public String toMessage() {
-            return code;
-        }
-
-        @Override public String parse(String data) {
-            return data;
-        }
-    }
 
     static class Read<T> implements Command<T> {
 
         private final String code;
         private final Function<String, T> parser;
 
-        private Read(String cmd, Function<String, T> parser) {
-            this.code = Obd2.AT(cmd);
+        private Read(String code, Function<String, T> parser) {
+            this.code = code;
             this.parser = parser;
         }
 
@@ -48,7 +28,7 @@ public class Commands {
         static class Computer extends Read<Float> {
 
             private Computer(String cmd, Function<String, Float> parser) {
-                super(cmd, parser);
+                super(Obd2.AT(cmd), parser);
             }
 
             private static final Function<String, Float> PARSER = new Function<String, Float>() {
@@ -67,6 +47,18 @@ public class Commands {
                     return super.parse(data);
                 }
             };
+        }
+
+        static class Info extends Read<String> {
+
+            private Info(String cmd) {
+                super(Obd2.AT(cmd), Functions.<String>identity());
+            }
+
+            public static final Command<String> DeviceName = new Info("@1");
+            public static final Command<String> DeviceIdentifier = new Info("@2");
+            public static final Command<String> ProtocolName = new Info("DP");
+            public static final Command<String> ProtocolCode = new Info("DPN");
         }
     }
 
@@ -128,7 +120,7 @@ public class Commands {
             }
         }
 
-        protected enum Param {
+        private enum Param {
           LineFeeds("E"),
           Echo("E"),
           PrintSpaces("S");
@@ -144,7 +136,7 @@ public class Commands {
           }
         }
 
-        protected enum Value {
+        private enum Value {
             NO ("0"),
             YES("1");
 

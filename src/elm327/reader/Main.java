@@ -74,11 +74,11 @@ public class Main {
         }
 
         // Device info
-        System.out.println(String.format("Device: %s"    , proto.read(Commands.Get.DeviceName)));
-        System.out.println(String.format("Identifier: %s", proto.read(Commands.Get.DeviceIdentifier)));
+        System.out.println(String.format("Device: %s"    , proto.read(Commands.Read.Info.DeviceName)));
+        System.out.println(String.format("Identifier: %s", proto.read(Commands.Read.Info.DeviceIdentifier)));
 
-        System.out.println(String.format("Protocol: %s (%s)", proto.read(Commands.Get.ProtocolName),    // proto name
-                                                              proto.read(Commands.Get.ProtocolCode))); // proto number
+        System.out.println(String.format("Protocol: %s (%s)", proto.read(Commands.Read.Info.ProtocolName),    // proto name
+                                                              proto.read(Commands.Read.Info.ProtocolCode))); // proto number
         System.out.println("\nValues:");
 
         while (true) {
