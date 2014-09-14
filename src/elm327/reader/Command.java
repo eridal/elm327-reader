@@ -3,11 +3,13 @@ package elm327.reader;
 import com.google.common.base.Function;
 import com.google.common.base.Functions;
 
-public interface Command {
+public interface Command<T> {
 
-    String toCommandString();
+    String toMessage();
+    T parse(String data);
+    boolean matches(String message);
 
-    public enum Get implements Command {
+    public enum Get implements Command<String> {
         DeviceName("@1"),
         DeviceIdentifier("@2"),
         ProtocolName("DP"),
@@ -19,12 +21,20 @@ public interface Command {
             code = "AT" + cmd;
         }
 
-        @Override public String toCommandString() {
+        @Override public String toMessage() {
             return code;
+        }
+
+        @Override public String parse(String data) {
+            return data;
+        }
+
+        @Override public boolean matches(String message) {
+            return toMessage().equals(message);
         }
     }
 
-    public class Read<T> implements Command {
+    public class Read<T> implements Command<T> {
 
         public static final Read<String> IgnitionInputLevel = new Read<String>("IGN", Functions.<String>identity());
         public static final Read<String> Voltage = new Read<String>("RV", Functions.<String>identity());
@@ -37,16 +47,20 @@ public interface Command {
             this.parser = parser;
         }
 
-        @Override public String toCommandString() {
+        @Override public String toMessage() {
             return code;
         }
 
-        public T parse(String result) {
-            return parser.apply(result);
+        @Override public T parse(String data) {
+            return parser.apply(data);
+        }
+
+        @Override public boolean matches(String message) {
+            return toMessage().equals(message);
         }
     }
 
-    public enum Do implements Command {
+    public enum Do implements Command<Boolean> {
         Reset("Z"),
         SetAllToDefaults("D");
 
@@ -56,70 +70,86 @@ public interface Command {
             code = "AT" + cmd;
         }
 
-        @Override public String toCommandString() {
+        @Override public String toMessage() {
             return code;
         }
-    }
 
-    public class Disable extends Send {
+        @Override public Boolean parse(String data) {
+            return "OK" == data;
+        }
 
-        public static final Disable Echo = new Disable(Action.Echo);
-        public static final Disable PrintSpaces = new Disable(Action.PrintSpaces);
-        public static final Disable LineFeeds = new Disable(Action.LineFeeds);
-
-        private Disable(Send.Action action) {
-            super(action, Param.NO);
+        @Override public boolean matches(String message) {
+            return toMessage().equals(message);
         }
     }
 
-    public class Enable extends Send {
+    public class Disable extends Setup {
 
-        public static final Enable Echo = new Enable(Action.Echo);
-        public static final Enable PrintSpaces = new Enable(Action.PrintSpaces);
-        public static final Enable LineFeeds = new Enable(Action.LineFeeds);
+        public static final Disable Echo = new Disable(Param.Echo);
+        public static final Disable PrintSpaces = new Disable(Param.PrintSpaces);
+        public static final Disable LineFeeds = new Disable(Param.LineFeeds);
 
-        private Enable(Action action) {
-            super(action, Param.YES);
+        private Disable(Setup.Param action) {
+            super(action, Value.NO);
         }
     }
 
-    public class Send implements Command {
+    public class Enable extends Setup {
 
-        private final Action action;
+        public static final Enable Echo = new Enable(Param.Echo);
+        public static final Enable PrintSpaces = new Enable(Param.PrintSpaces);
+        public static final Enable LineFeeds = new Enable(Param.LineFeeds);
+
+        private Enable(Param action) {
+            super(action, Value.YES);
+        }
+    }
+
+    public class Setup implements Command<Boolean> {
+
         private final Param param;
+        private final Value value;
 
-        public Send(Action action, Param param) {
-            this.action = action;
-            this.param = param;
+        public Setup(Param action, Value param) {
+            this.param = action;
+            this.value = param;
         }
 
-        @Override public String toCommandString() {
-            return String.format("AT%s", action.toCommandString(param));
+        @Override public String toMessage() {
+            return String.format("AT%s", param.toMessage(value));
         }
 
-        enum Action {
+        @Override public Boolean parse(String data) {
+            return "OK" == data;
+        }
+
+        @Override public boolean matches(String message) {
+            return toMessage().equals(message);
+        }
+
+        enum Param {
           LineFeeds("E"),
           Echo("E"),
           PrintSpaces("S");
 
           private final String code;
 
-          Action(String code) {
+          Param(String code) {
               this.code = code;
           }
 
-          public String toCommandString(Param p) {
+          public String toMessage(Value p) {
               return String.format("%s%s", code, p.value);
           }
         }
 
-        enum Param {
+        enum Value {
             NO ("0"),
             YES("1");
 
             final public String value;
 
-            Param(String value) {
+            Value(String value) {
                 this.value = value;
             }
         }
