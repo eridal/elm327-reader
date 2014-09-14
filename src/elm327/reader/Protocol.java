@@ -22,7 +22,6 @@ class Protocol {
     }
 
     public void initialize(Command ... setup) {
-        channel.flush();
         for (Command cmd : setup) {
             channel.send(cmd);
         }
