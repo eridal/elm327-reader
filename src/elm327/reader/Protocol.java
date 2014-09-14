@@ -1,9 +1,10 @@
 package elm327.reader;
 
+import java.io.IOException;
 
 class Protocol {
 
-    static final Command[] DEFAULT_SETUP = {
+    static final Command<?>[] DEFAULT_SETUP = {
         Command.Do.Reset,
         Command.Disable.Echo,
         Command.Disable.LineFeeds,
@@ -12,37 +13,45 @@ class Protocol {
 
     private final Channel channel;
 
-    public Protocol (Channel channel) {
+    public Protocol (Channel channel) throws InitializationException {
         this(channel, DEFAULT_SETUP);
     }
 
-    public Protocol (final Channel channel, Command ... setup) {
+    public Protocol (final Channel channel, Command<?> ... setup) throws InitializationException {
         this.channel = channel;
         initialize(setup);
     }
 
-    public void initialize(Command ... setup) {
-        for (Command cmd : setup) {
-            channel.send(cmd);
+    public void initialize(Command<?> ... setup) throws InitializationException {
+        for (Command<?> cmd : setup) {
+            Result<?> result = send(cmd);
+            if (result instanceof Result.Error) {
+                Result.Error<?> resultError = (Result.Error<?>) result;
+                throw new InitializationException(resultError.getError());
+            }
         }
     }
 
-    public String get(Command.Get command) {
-        return channel.send(command);
+    public <T> Result<T> send(Command<T> command) {
+        String message = command.toMessage();
+        String response;
+        try {
+            response = channel.send(message);
+        } catch (IOException e) {
+            return new Result.Error<T>(e);
+        }
+        return ResultParser.parse(response, command);
     }
 
-    public boolean send(Command.Send command) {
-        return Result.OK.matches(
-            channel.send(command)
-        );
+    public <T> T read(Command<T> command) {
+        Result<T> result = send(command);
+        return result.getData();
     }
 
-    public <T> T read(Command.Read<T> command) {
-        String result = channel.send(command);
-        return command.parse(result);
-    }
-
-    public <T> String read(PID<T> pid) {
-        return channel.send(pid);
+    @SuppressWarnings("serial")
+    class InitializationException extends Exception {
+        InitializationException(Exception e) {
+            super(e);
+        }
     }
 }
