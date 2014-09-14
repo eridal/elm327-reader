@@ -11,6 +11,8 @@ import java.util.Map.Entry;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableMap;
 
+import elm327.reader.Protocol.InitializationException;
+
 public class Main {
 
     private static Map<String, Mode> MODES = new ImmutableMap.Builder<String, Mode>()
@@ -67,16 +69,16 @@ public class Main {
         try {
             Channel channel = runner.connect(params);
             proto = new Protocol(channel);
-        } catch (IOException e) {
+        } catch (IOException | InitializationException e) {
             throw Throwables.propagate(e);
         }
 
         // Device info
-        System.out.println(String.format("Device: %s"    , proto.get(Command.Get.DeviceName)));
-        System.out.println(String.format("Identifier: %s", proto.get(Command.Get.DeviceIdentifier)));
+        System.out.println(String.format("Device: %s"    , proto.read(Command.Get.DeviceName)));
+        System.out.println(String.format("Identifier: %s", proto.read(Command.Get.DeviceIdentifier)));
 
-        System.out.println(String.format("Protocol: %s (%s)", proto.get(Command.Get.ProtocolName),    // proto name
-                                                              proto.get(Command.Get.ProtocolCode))); // proto number
+        System.out.println(String.format("Protocol: %s (%s)", proto.read(Command.Get.ProtocolName),    // proto name
+                                                              proto.read(Command.Get.ProtocolCode))); // proto number
         System.out.println("\nValues:");
 
         while (true) {
