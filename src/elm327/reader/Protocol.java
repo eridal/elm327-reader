@@ -38,7 +38,7 @@ class Protocol {
         try {
             response = channel.send(message);
         } catch (IOException e) {
-            return new Result.Error<T>(e);
+            return new Result.Error<T>(command, e);
         }
         return ResultParser.parse(response, command);
     }

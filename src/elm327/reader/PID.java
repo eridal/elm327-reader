@@ -168,8 +168,4 @@ class PID<T> implements Command<T> {
     @Override public String toMessage() {
         return code;
     }
-
-    @Override public boolean matches(String message) {
-        return code == message;
-    }
 }

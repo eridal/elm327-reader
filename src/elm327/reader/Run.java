@@ -49,25 +49,16 @@ public class Run {
         }
 
         public void go() {
-            headers();
+            go(HEADERS);
             for (;;) {
-                values();
+                go(VALUES);
+                go(PIDS);
             }
         }
 
-        private void headers() {
-            for (Map.Entry<String, Command.Get> header : HEADERS.entrySet()) {
-                Command.Get cmd = header.getValue();
-                String result = proto.read(cmd);
-                System.out.println(
-                    String.format("%s: %s", header.getKey(), result)
-                );
-            }
-        }
-
-        private void values() {
-            for (Map.Entry<String, Command.Read<?>> header : VALUES.entrySet()) {
-                Command.Read<?> cmd = header.getValue();
+        private void go(Map<?, Command<?>> values) {
+            for (Map.Entry<?, Command<?>> header : values.entrySet()) {
+                Command<?> cmd = header.getValue();
                 Object result = proto.read(cmd);
                 System.out.println(
                     String.format("%s: %s", header.getKey(), result)
@@ -75,15 +66,19 @@ public class Run {
             }
         }
 
-        private static final Map<String, Command.Get> HEADERS = new ImmutableMap.Builder<String, Command.Get>()
+        private static final Map<String, Command<?>> HEADERS = new ImmutableMap.Builder<String, Command<?>>()
                 .put("Device", Command.Get.DeviceName)
                 .build();
 
-        private static final Map<String, Command.Read<?>> VALUES = new ImmutableMap.Builder<String, Command.Read<?>>()
+        private static final Map<String, Command<?>> VALUES = new ImmutableMap.Builder<String, Command<?>>()
                 .put("Ignition", Command.Read.IgnitionInputLevel)
                 .put("Voltage", Command.Read.Voltage)
                 .build();
 
+        private static final Map<String, Command<?>> PIDS = new ImmutableMap.Builder<String, Command<?>>()
+                .put("Throttle", PID.THROTTLE_POSITION)
+                .put("Speed", PID.VEHICLE_SPEED)
+                .build();
 
     }
 }

@@ -5,34 +5,40 @@ import com.google.common.base.Strings;
 public class ResultParser {
 
     public static <T> Result<T> parse(String response, Command<T> command) {
-
-        String[] fragments = split(response);
-
-        switch (fragments.length) {
-            case 0:
-                return new Result.Error<T>(new EmptyResultException());
-            case 1:
-                return new Result.Response<T>(command, fragments[0]);
-            case 2:
-                if (command.matches(fragments[0])) {
-                    return new Result.Response<T>(command, fragments[1]);
-                }
-                return new Result.Error<T>(new BadCommandResultException());
-            default:
-                return new Result.Error<T>(new TooMuchResultDataException());
+        String data;
+        try {
+            data = extractData(response, command);
+        } catch(Exception e) {
+            return new Result.Error<T>(command, e);
         }
+        return new Result.Response<T>(command, data);
     }
 
-    private static String[] split(String response) {
+    private static <T> String extractData(String response, Command<T> command) throws Exception {
+        String[] fragments = split(response);
+        if (fragments.length == 1) {
+            return fragments[0];
+        }
+        if (fragments.length == 2) {
+            String message = command.toMessage();
+            if (message.equals(fragments[0])) {
+                return fragments[1];
+            }
+            throw new BadCommandResultException();
+        }
+        throw new TooMuchResultDataException();
+    }
+
+    private static String[] split(String response) throws Exception {
 
         if (Strings.isNullOrEmpty(response)) {
-            return new String[0];
+            throw new EmptyResultException();
         }
 
         response = response.trim();
 
         if (Strings.isNullOrEmpty(response)) {
-            return new String[0];
+            throw new EmptyResultException();
         }
 
         return response.split("\n+");

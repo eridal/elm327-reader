@@ -7,7 +7,6 @@ public interface Command<T> {
 
     String toMessage();
     T parse(String data);
-    boolean matches(String message);
 
     public enum Get implements Command<String> {
         DeviceName("@1"),
@@ -18,7 +17,7 @@ public interface Command<T> {
         private final String code;
 
         Get(String cmd) {
-            code = "AT" + cmd;
+            code = Obd2.AT(cmd);
         }
 
         @Override public String toMessage() {
@@ -27,10 +26,6 @@ public interface Command<T> {
 
         @Override public String parse(String data) {
             return data;
-        }
-
-        @Override public boolean matches(String message) {
-            return toMessage().equals(message);
         }
     }
 
@@ -43,7 +38,7 @@ public interface Command<T> {
         private final Function<String, T> parser;
 
         Read(String cmd, Function<String, T> parser) {
-            code = "AT" + cmd;
+            code = Obd2.AT(cmd);
             this.parser = parser;
         }
 
@@ -54,10 +49,6 @@ public interface Command<T> {
         @Override public T parse(String data) {
             return parser.apply(data);
         }
-
-        @Override public boolean matches(String message) {
-            return toMessage().equals(message);
-        }
     }
 
     public enum Do implements Command<Boolean> {
@@ -67,7 +58,7 @@ public interface Command<T> {
         private final String code;
 
         Do(String cmd) {
-            code = "AT" + cmd;
+            code = Obd2.AT(cmd);
         }
 
         @Override public String toMessage() {
@@ -76,10 +67,6 @@ public interface Command<T> {
 
         @Override public Boolean parse(String data) {
             return "OK" == data;
-        }
-
-        @Override public boolean matches(String message) {
-            return toMessage().equals(message);
         }
     }
 
@@ -107,24 +94,18 @@ public interface Command<T> {
 
     public class Setup implements Command<Boolean> {
 
-        private final Param param;
-        private final Value value;
+        private final String message;
 
-        public Setup(Param action, Value param) {
-            this.param = action;
-            this.value = param;
-        }
-
-        @Override public String toMessage() {
-            return String.format("AT%s", param.toMessage(value));
+        public Setup(Param param, Value value) {
+            message = Obd2.AT(param.toMessage(value));
         }
 
         @Override public Boolean parse(String data) {
             return "OK" == data;
         }
 
-        @Override public boolean matches(String message) {
-            return toMessage().equals(message);
+        @Override public String toMessage() {
+            return message;
         }
 
         enum Param {
@@ -152,6 +133,15 @@ public interface Command<T> {
             Value(String value) {
                 this.value = value;
             }
+        }
+    }
+
+    static class Obd2 {
+        static String AT(String command) {
+            return "AT" + command;
+        }
+        static String Read(String command) {
+            return "01" + command;
         }
     }
 }
