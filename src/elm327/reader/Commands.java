@@ -90,42 +90,42 @@ public class Commands {
         }
     }
 
-    static class Disable extends Setup {
-
-        public static final Disable Echo = new Disable(Param.Echo);
-        public static final Disable PrintSpaces = new Disable(Param.PrintSpaces);
-        public static final Disable LineFeeds = new Disable(Param.LineFeeds);
-
-        private Disable(Setup.Param action) {
-            super(action, Value.NO);
-        }
-    }
-
-    static class Enable extends Setup {
-
-        public static final Enable Echo = new Enable(Param.Echo);
-        public static final Enable PrintSpaces = new Enable(Param.PrintSpaces);
-        public static final Enable LineFeeds = new Enable(Param.LineFeeds);
-
-        private Enable(Param action) {
-            super(action, Value.YES);
-        }
-    }
-
-    static class Setup implements Command<Boolean> {
+    static class Configure implements Command<Boolean> {
 
         private final String message;
 
-        public Setup(Param param, Value value) {
+        public Configure(Param param, Value value) {
             message = Obd2.AT(param.toMessage(value));
         }
 
         @Override public Boolean parse(String data) {
-            return "OK" == data;
+            return Obd2.isOK(data);
         }
 
         @Override public String toMessage() {
             return message;
+        }
+
+        static class Disable extends Configure {
+
+            public static final Configure Echo = new Disable(Param.Echo);
+            public static final Configure PrintSpaces = new Disable(Param.PrintSpaces);
+            public static final Configure LineFeeds = new Disable(Param.LineFeeds);
+
+            private Disable(Param action) {
+                super(action, Value.NO);
+            }
+        }
+
+        static class Enable extends Configure {
+
+            public static final Configure Echo = new Enable(Param.Echo);
+            public static final Configure PrintSpaces = new Enable(Param.PrintSpaces);
+            public static final Configure LineFeeds = new Enable(Param.LineFeeds);
+
+            private Enable(Param action) {
+                super(action, Value.YES);
+            }
         }
 
         protected enum Param {
@@ -162,6 +162,10 @@ public class Commands {
         }
         static String Read(String command) {
             return "01" + command;
+        }
+
+        static boolean isOK(String data) {
+            return "OK".equals(data);
         }
     }
 }

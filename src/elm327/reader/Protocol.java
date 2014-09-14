@@ -6,9 +6,9 @@ class Protocol {
 
     static final Command<?>[] DEFAULT_SETUP = {
         Commands.Send.FullReset,
-        Commands.Disable.Echo,
-        Commands.Disable.LineFeeds,
-        Commands.Disable.PrintSpaces,
+        Commands.Configure.Disable.Echo,
+        Commands.Configure.Disable.LineFeeds,
+        Commands.Configure.Disable.PrintSpaces,
     };
 
     private final Channel channel;
