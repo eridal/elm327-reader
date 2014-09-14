@@ -1,5 +1,6 @@
 package elm327.reader;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Map;
 
@@ -11,7 +12,7 @@ public class Debug {
 
     private final Protocol proto;
 
-    Debug(Protocol proto) {
+    private Debug(Protocol proto) {
         this.proto = proto;
     }
 
@@ -41,7 +42,7 @@ public class Debug {
             .build();
 
     private static final Map<String, Command<?>> VALUES = new ImmutableMap.Builder<String, Command<?>>()
-            .put("Ignition", Commands.Read.IgnitionInputLevel)
+            .put("Ignition", Commands.Read.Ignition)
             .put("Voltage", Commands.Read.Voltage)
             .build();
 
@@ -57,15 +58,18 @@ public class Debug {
             return;
         }
 
-        Protocol proto;
+        final Channel channel;
+        final Protocol proto;
 
         try {
-            proto = new Protocol(
-                Channels.fromFile(new File(args[0]))
-            );
+            channel = Channels.fromFile(new File(args[0]));
         } catch (FileNotFoundException e) {
             System.out.println("ERROR: File not found");
             return;
+        }
+
+        try {
+            proto = new Protocol(channel);
         } catch (InitializationException e) {
             System.out.println("ERROR: Protocol startup error");
             return;

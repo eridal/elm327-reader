@@ -1,7 +1,6 @@
 package elm327.reader;
 
 import com.google.common.base.Function;
-import com.google.common.base.Functions;
 
 public class Commands {
 
@@ -28,25 +27,39 @@ public class Commands {
         }
     }
 
-    static class Read<T> implements Command<T> {
+    static class Read implements Command<Float> {
 
-        public static final Read<String> IgnitionInputLevel = new Read<String>("IGN", Functions.<String>identity());
-        public static final Read<String> Voltage = new Read<String>("RV", Functions.<String>identity());
+        public static final Read Voltage = new Read("RV");
+        public static final Read Ignition = new Read("IGN") {
+            private final String OBDSIM_BUG = "ELM327 v1.3a OBDGPSLogger";
+            @Override public Float parse(String data) {
+                if (OBDSIM_BUG.equals(data)) {
+                    return 0.0f;
+                }
+                return super.parse(data);
+            }
+        };
 
         private final String code;
-        private final Function<String, T> parser;
 
-        private Read(String cmd, Function<String, T> parser) {
+        private Read(String cmd) {
             code = Obd2.AT(cmd);
-            this.parser = parser;
         }
 
         @Override public String toMessage() {
             return code;
         }
 
-        @Override public T parse(String data) {
-            return parser.apply(data);
+        Function<String, Float> PARSER = new Function<String, Float>() {
+            @Override public Float apply(String data) {
+                return Float.valueOf(data);
+            }
+        };
+
+
+
+        @Override public Float parse(String data) {
+            return PARSER.apply(data);
         }
     }
 

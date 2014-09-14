@@ -74,16 +74,16 @@ public class Main {
         }
 
         // Device info
-        System.out.println(String.format("Device: %s"    , proto.read(Command.Get.DeviceName)));
-        System.out.println(String.format("Identifier: %s", proto.read(Command.Get.DeviceIdentifier)));
+        System.out.println(String.format("Device: %s"    , proto.read(Commands.Get.DeviceName)));
+        System.out.println(String.format("Identifier: %s", proto.read(Commands.Get.DeviceIdentifier)));
 
-        System.out.println(String.format("Protocol: %s (%s)", proto.read(Command.Get.ProtocolName),    // proto name
-                                                              proto.read(Command.Get.ProtocolCode))); // proto number
+        System.out.println(String.format("Protocol: %s (%s)", proto.read(Commands.Get.ProtocolName),    // proto name
+                                                              proto.read(Commands.Get.ProtocolCode))); // proto number
         System.out.println("\nValues:");
 
         while (true) {
-            System.out.println(String.format(" Volts: %s", proto.read(Command.Read.Voltage)));
-            System.out.println(String.format(" Ignition: %s", proto.read(Command.Read.IgnitionInputLevel)));
+            System.out.println(String.format(" Volts: %s", proto.read(Commands.Read.Voltage)));
+            System.out.println(String.format(" Ignition: %s", proto.read(Commands.Read.Ignition)));
             System.out.println(" PIDs:");
 
             for (PID<?> pid : PIDS) {
