@@ -2,6 +2,6 @@ package elm327.reader;
 
 
 public interface Command<T> {
-    String toMessage();
+    Message message();
     T parse(String data);
 }

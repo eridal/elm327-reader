@@ -137,7 +137,7 @@ class PID<T> implements Command<T> {
         return converter.apply(hex);
     }
 
-    @Override public String toMessage() {
-        return code;
+    @Override public Message message() {
+        return null;
     }
 }

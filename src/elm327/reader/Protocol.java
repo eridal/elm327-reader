@@ -33,10 +33,9 @@ class Protocol {
     }
 
     public <T> Result<T> send(Command<T> command) {
-        String message = command.toMessage();
         String response;
         try {
-            response = channel.send(message);
+            response = channel.send(command.message());
         } catch (IOException e) {
             return new Result.Error<T>(command, e);
         }

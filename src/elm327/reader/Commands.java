@@ -4,20 +4,20 @@ public class Commands {
 
     private Commands() { }
 
-    static class Read {
+    interface Read {
 
         enum Computer implements Command<Float> {
 
             Voltage("RV"),
             Ignition("IGN");
 
-            private final String message;
+            private final Message message;
 
             Computer(String code) {
-                message = Obd2.AT(code);
+                message = Message.AT(code);
             }
 
-            @Override public String toMessage() {
+            @Override public Message message() {
                 return message;
             }
 
@@ -39,13 +39,13 @@ public class Commands {
             ProtocolName("DP"),
             ProtocolCode("DPN");
 
-            private final String message;
+            private final Message message;
 
             private Info(String code) {
-                message = Obd2.AT(code);
+                message = Message.AT(code);
             }
 
-            @Override public String toMessage() {
+            @Override public Message message() {
                 return message;
             }
 
@@ -54,18 +54,18 @@ public class Commands {
             }
         }
 
-    static class Car {
+        interface Car {
 
             enum Position implements Command<Double> {
                 Throttle(Pid.ThrottlePosition);
 
-                private final String message;
+                private final Message message;
 
                 private Position(Pid pid) {
-                    message = Obd2.DATA(pid.code);
+                    message = Message.DATA(pid.code);
                 }
 
-                @Override public String toMessage() {
+                @Override public Message message() {
                     return message;
                 }
 
@@ -77,13 +77,13 @@ public class Commands {
             enum Distance implements Command<Integer> {
                WithLampOn(Pid.DistanceWithMalfuncionOff);
 
-               private final String message;
+               private final Message message;
 
                private Distance(Pid pid) {
-                   message = Obd2.DATA(pid.code);
+                   message = Message.DATA(pid.code);
                }
 
-               @Override public String toMessage() {
+               @Override public Message message() {
                    return message;
                }
 
@@ -96,13 +96,13 @@ public class Commands {
 
                 Vehicle(Pid.VehicleSpeed);
 
-                private final String message;
+                private final Message message;
 
                 private Speed(Pid pid) {
-                    message = Obd2.DATA(pid.code);
+                    message = Message.DATA(pid.code);
                 }
 
-                @Override public String toMessage() {
+                @Override public Message message() {
                     return message;
                 }
 
@@ -118,14 +118,14 @@ public class Commands {
         WarmStart("WS"),
         SetDefaults("D");
 
-        private final String code;
+        private final Message message;
 
         private Send(String cmd) {
-            code = Obd2.AT(cmd);
+            message = Message.AT(cmd);
         }
 
-        @Override public String toMessage() {
-            return code;
+        @Override public Message message() {
+            return message;
         }
 
         @Override public String parse(String data) {
@@ -142,17 +142,17 @@ public class Commands {
         Enable_PrintSpaces(Param.PrintSpaces, Value.YES),
         Enable_LineFeeds(Param.LineFeeds, Value.YES);
 
-        private final String message;
+        private final Message message;
 
         private Configure(Param param, Value value) {
-            message = Obd2.AT(param.toMessage(value));
+            message = Message.AT(param.message(value));
         }
 
         @Override public Boolean parse(String data) {
-            return Obd2.isOK(data);
+            return "OK".equals(data);
         }
 
-        @Override public String toMessage() {
+        @Override public Message message() {
             return message;
         }
 
@@ -167,7 +167,7 @@ public class Commands {
               this.code = code;
           }
 
-          public String toMessage(Value p) {
+          public String message(Value p) {
               return String.format("%s%s", code, p.value);
           }
         }
@@ -183,18 +183,4 @@ public class Commands {
             }
         }
     }
-
-    private static class Obd2 {
-        static String AT(String command) {
-            return "AT" + command;
-        }
-        static String DATA(String command) {
-            return "01" + command;
-        }
-
-        static boolean isOK(String data) {
-            return "OK".equals(data);
-        }
-    }
-
 }

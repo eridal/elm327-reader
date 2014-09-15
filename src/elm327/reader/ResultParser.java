@@ -20,7 +20,7 @@ public class ResultParser {
             return fragments[0];
         }
         if (fragments.length == 2) {
-            String message = command.toMessage();
+            String message = command.message().code();
             if (message.equals(fragments[0])) {
                 return fragments[1];
             }

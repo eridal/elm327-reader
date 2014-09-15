@@ -54,8 +54,8 @@ class Channel {
         }
     }
 
-    public String send(String message) throws IOException {
-        write(message);
+    public String send(Message message) throws IOException {
+        write(message.code());
         return read();
     }
 }
