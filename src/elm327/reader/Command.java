@@ -4,3 +4,4 @@ public interface Command<T> {
     String toMessage();
     T parse(String data);
 }
+

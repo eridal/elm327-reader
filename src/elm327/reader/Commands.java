@@ -60,6 +60,27 @@ public class Commands {
             public static final Command<String> ProtocolName = new Info("DP");
             public static final Command<String> ProtocolCode = new Info("DPN");
         }
+
+        static class Car<T> extends Read<T> {
+
+            private Car(String cmd, Function<String, T> parser) {
+                super(Obd2.DATA(cmd), parser);
+            }
+
+            static class Position extends Car<Integer> {
+                private Position(String cmd) {
+                    super(cmd, Parsers.POSITION);
+                }
+            }
+
+            static class Distance extends Car<Integer> {
+                public static final Command<Integer> WITH_LAMP_ON = new Distance(Pid.DistanceWithMalfuncionOff);
+
+                Distance(Pid pid) {
+                    super(pid.code, Parsers.DISTANCE);
+                }
+            }
+        }
     }
 
     static enum Send implements Command<String> {
@@ -152,7 +173,7 @@ public class Commands {
         static String AT(String command) {
             return "AT" + command;
         }
-        static String Read(String command) {
+        static String DATA(String command) {
             return "01" + command;
         }
 

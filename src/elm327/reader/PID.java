@@ -139,7 +139,7 @@ class PID<T> implements Command<T> {
 
     public static final PID<Integer> RUNTIME_SINCE_ENGINE_START = new PID<Integer>("011F", "Run time since engine start", "s", RETURNS_SHORT);
 
-    public static final PID<Integer> DISTANCE_TRAVELED_WITH_LAMP_ON = new PID<Integer>("0121", "Distance traveled with malfunction indicator lamp (MIL) on", "Km", RETURNS_SHORT);
+
 
     public final String code;
     public final String desc;
