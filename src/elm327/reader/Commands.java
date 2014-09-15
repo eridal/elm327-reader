@@ -1,93 +1,119 @@
 package elm327.reader;
 
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
-
 public class Commands {
 
     private Commands() { }
 
-    static class Read<T> implements Command<T> {
+    static class Read {
 
-        private final String code;
-        private final Function<String, T> parser;
+        enum Computer implements Command<Float> {
 
-        private Read(String code, Function<String, T> parser) {
-            this.code = code;
-            this.parser = parser;
-        }
+            Voltage("RV"),
+            Ignition("IGN");
 
-        @Override public String toMessage() {
-            return code;
-        }
+            private final String message;
 
-        @Override public T parse(String data) {
-            return parser.apply(data);
-        }
-
-        static class Computer extends Read<Float> {
-
-            private Computer(String cmd, Function<String, Float> parser) {
-                super(Obd2.AT(cmd), parser);
+            Computer(String code) {
+                message = Obd2.AT(code);
             }
 
-            private static final Function<String, Float> PARSER = new Function<String, Float>() {
-                @Override public Float apply(String data) {
-                    return Float.valueOf(data);
-                }
-            };
+            @Override public String toMessage() {
+                return message;
+            }
 
-            public static final Command<Float> Voltage = new Computer("RV", PARSER);
-            public static final Command<Float> Ignition = new Computer("IGN", PARSER) {
-                private final String OBDSIM_BUG = "ELM327 v1.3a OBDGPSLogger";
-                @Override public Float parse(String data) {
+            private final String OBDSIM_BUG = "ELM327 v1.3a OBDGPSLogger";
+
+            @Override public Float parse(String data) {
+                if (this == Ignition) {
                     if (OBDSIM_BUG.equals(data)) {
                         return 0.0f;
                     }
-                    return super.parse(data);
                 }
-            };
+                return Float.valueOf(data);
+            }
         }
 
-        static class Info extends Read<String> {
+        enum Info implements Command<String> {
+            DeviceName("@1"),
+            DeviceIdentifier("@2"),
+            ProtocolName("DP"),
+            ProtocolCode("DPN");
 
-            private Info(String cmd) {
-                super(Obd2.AT(cmd), Functions.<String>identity());
+            private final String message;
+
+            private Info(String code) {
+                message = Obd2.AT(code);
             }
 
-            public static final Command<String> DeviceName = new Info("@1");
-            public static final Command<String> DeviceIdentifier = new Info("@2");
-            public static final Command<String> ProtocolName = new Info("DP");
-            public static final Command<String> ProtocolCode = new Info("DPN");
+            @Override public String toMessage() {
+                return message;
+            }
+
+            @Override public String parse(String data) {
+                return data;
+            }
         }
 
-        static class Car<T> extends Read<T> {
+    static class Car {
 
-            private Car(Pid pid, Function<String, T> parser) {
-                super(Obd2.DATA(pid.code), parser);
-            }
+            enum Position implements Command<Double> {
+                Throttle(Pid.ThrottlePosition);
 
-            static class Position extends Car<Double> {
+                private final String message;
 
                 private Position(Pid pid) {
-                    super(pid, Parsers.POSITION);
+                    message = Obd2.DATA(pid.code);
                 }
 
-                static final Command<Double> Throttle = new Position(Pid.ThrottlePosition);
+                @Override public String toMessage() {
+                    return message;
+                }
+
+                @Override public Double parse(String data) {
+                    return Parsers.position(data);
+                }
             }
 
-            static class Distance extends Car<Integer> {
+            enum Distance implements Command<Integer> {
+               WithLampOn(Pid.DistanceWithMalfuncionOff);
 
-                private Distance(Pid pid) {
-                    super(pid, Parsers.DISTANCE);
+               private final String message;
+
+               private Distance(Pid pid) {
+                   message = Obd2.DATA(pid.code);
+               }
+
+               @Override public String toMessage() {
+                   return message;
+               }
+
+               @Override public Integer parse(String data) {
+                   return Parsers.distance(data);
+               }
+            }
+
+            enum Speed implements Command<Integer> {
+
+                Vehicle(Pid.VehicleSpeed);
+
+                private final String message;
+
+                private Speed(Pid pid) {
+                    message = Obd2.DATA(pid.code);
                 }
 
-                public static final Command<Integer> WithLampOn = new Distance(Pid.DistanceWithMalfuncionOff);
+                @Override public String toMessage() {
+                    return message;
+                }
+
+                @Override public Integer parse(String data) {
+                    return Parsers.speed(data);
+                }
             }
         }
     }
 
-    static enum Send implements Command<String> {
+    enum Send implements Command<String> {
         FullReset("Z"),
         WarmStart("WS"),
         SetDefaults("D");
@@ -107,11 +133,18 @@ public class Commands {
         }
     }
 
-    static class Configure implements Command<Boolean> {
+    enum Configure implements Command<Boolean> {
+
+        Disable_Echo(Param.Echo, Value.NO),
+        Disable_PrintSpaces(Param.PrintSpaces, Value.NO),
+        Disable_LineFeeds(Param.LineFeeds, Value.NO),
+        Enable_Echo(Param.Echo, Value.YES),
+        Enable_PrintSpaces(Param.PrintSpaces, Value.YES),
+        Enable_LineFeeds(Param.LineFeeds, Value.YES);
 
         private final String message;
 
-        public Configure(Param param, Value value) {
+        private Configure(Param param, Value value) {
             message = Obd2.AT(param.toMessage(value));
         }
 
@@ -121,28 +154,6 @@ public class Commands {
 
         @Override public String toMessage() {
             return message;
-        }
-
-        static class Disable extends Configure {
-
-            public static final Configure Echo = new Disable(Param.Echo);
-            public static final Configure PrintSpaces = new Disable(Param.PrintSpaces);
-            public static final Configure LineFeeds = new Disable(Param.LineFeeds);
-
-            private Disable(Param action) {
-                super(action, Value.NO);
-            }
-        }
-
-        static class Enable extends Configure {
-
-            public static final Configure Echo = new Enable(Param.Echo);
-            public static final Configure PrintSpaces = new Enable(Param.PrintSpaces);
-            public static final Configure LineFeeds = new Enable(Param.LineFeeds);
-
-            private Enable(Param action) {
-                super(action, Value.YES);
-            }
         }
 
         private enum Param {
@@ -173,7 +184,7 @@ public class Commands {
         }
     }
 
-    static class Obd2 {
+    private static class Obd2 {
         static String AT(String command) {
             return "AT" + command;
         }
@@ -185,4 +196,5 @@ public class Commands {
             return "OK".equals(data);
         }
     }
+
 }

@@ -12,6 +12,12 @@ public enum Pid {
         "11", 1,
         "Throttle position",
         0, 100, "%"
+    ),
+
+    VehicleSpeed(
+        "010D", 1,
+        "Vehicle speed",
+        0, 255, "km/h"
     );
 
     public final String code;

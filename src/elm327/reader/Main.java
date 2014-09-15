@@ -34,7 +34,6 @@ public class Main {
     }
 
     private final static PID<?>[] PIDS = new PID[] {
-        PID.VEHICLE_SPEED,
         PID.ENGINE_RPM,
         PID.FUEL_PRESSURE,
         PID.ENGINE_LOAD_VALUE,

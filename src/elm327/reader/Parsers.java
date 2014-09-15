@@ -2,43 +2,53 @@ package elm327.reader;
 
 import java.util.Arrays;
 
-import com.google.common.base.Function;
+class Parsers {
 
-interface Parsers {
+    private Parsers() { }
 
-    final Function<String, byte[]> BYTES = new Function<String, byte[]>() {
-        @Override public byte[] apply(String data) {
+    static byte[] toBytes(String data) {
+        return toBytes(data, 20);
+    }
 
-            byte[] bytes = new byte[20];
+    static byte[] toBytes(String data, int maxSize) {
 
-            int index = 0;
-            int length = data.length();
+        assert maxSize > 0;
 
-            for (int b = 0; index < length; index++) {
+        byte[] bytes = new byte[maxSize];
 
-                if (data.charAt(index) == ' ') {
-                    continue;
-                }
+        int b = 0;
+        int index = 0;
+        int length = data.length();
 
-                String hex = data.substring(index, 2);
-                bytes[b++] = Byte.valueOf(hex, 16);
+        for (; b < maxSize && index < length; index++) {
+
+            if (data.charAt(index) == ' ') {
+                continue;
             }
 
-            return Arrays.copyOf(bytes, index);
+            String hex = data.substring(index, 2);
+            bytes[b++] = Byte.valueOf(hex, 16);
+        }
+
+        if (b < maxSize) {
+            return Arrays.copyOf(bytes, b);
+        } else {
+            return bytes;
         }
     };
 
-    final Function<String, Integer> DISTANCE = new Function<String, Integer>() {
-        @Override public Integer apply(String data) {
-            byte[] bytes = BYTES.apply(data);
-            return (bytes[0] * 256) + bytes[1];
-        }
+    static int distance(String data) {
+        byte[] bytes = toBytes(data, 2);
+        return (bytes[0] * 256) + bytes[1];
     };
 
-    final Function<String, Double> POSITION = new Function<String, Double>() {
-        @Override public Double apply(String data) {
-            byte[] bytes = BYTES.apply(data);
-            return (bytes[0] * 100) / 255.0;
-        }
+    static double position(String data) {
+        byte[] bytes = toBytes(data, 1);
+        return (bytes[0] * 100) / 255.0;
+    };
+
+    static int speed(String data) {
+        byte[] bytes = toBytes(data, 1);
+        return bytes[0];
     };
 }

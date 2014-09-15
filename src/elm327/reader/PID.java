@@ -29,12 +29,6 @@ class PID<T> implements Command<T> {
         }
     };
 
-    private static final Function<String, Integer> RETURNS_FIRST_BYTE = WITH_BYTES(new Function<byte[], Integer>() {
-        @Override public Integer apply(byte[] bytes) {
-            return Integer.valueOf(bytes[0]);
-        }
-    });
-
     private static final Function<String, Integer> RETURNS_SHORT = WITH_BYTES(new Function<byte[], Integer>() {
         @Override public Integer apply(byte[] bytes) {
             return (bytes[0] * 256) + bytes[1];
@@ -74,8 +68,6 @@ class PID<T> implements Command<T> {
             return ((bytes[1] * 256) + bytes[0]) / 4;
         }
     }));
-
-    public static final PID<Integer> VEHICLE_SPEED = new PID<Integer>("010D", "Vehicle speed", "km/h", RETURNS_FIRST_BYTE);
 
     public static final PID<Double> TIMING_ADVANCE = new PID<Double>("010E", "Timing advance", "°", WITH_BYTES(new Function<byte[], Double>() {
         @Override public Double apply(byte[] bytes) {
