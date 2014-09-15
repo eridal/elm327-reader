@@ -48,8 +48,9 @@ public class Debug {
             .build();
 
     private static final Map<String, Command<?>> PIDS = new ImmutableMap.Builder<String, Command<?>>()
-            .put("Throttle", PID.THROTTLE_POSITION)
             .put("Speed", PID.VEHICLE_SPEED)
+            .put("Position.Throttle", Commands.Read.Car.Position.Throttle)
+            .put("Distance.WithLampOn", Commands.Read.Car.Distance.WithLampOn)
             .build();
 
     public static void main(String[] args) {

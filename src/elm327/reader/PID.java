@@ -1,29 +1,11 @@
 package elm327.reader;
 
 import com.google.common.base.Function;
-import com.google.common.base.Splitter;
 
 class PID<T> implements Command<T> {
 
-    private static final Function<String, byte[]> TO_BYTES = new Function<String, byte[]>() {
-        @Override public byte[] apply(String hex) {
-            int i = 0;
-            int bytesCount = hex.replaceAll("[0-9A-Fa-f]+", "").length() + 1;
-            byte[] bytes = new byte[bytesCount];
-            for (String h : Splitter.on(" ").split(hex)) {
-                assert i <= bytes.length;
-                bytes[i++] = Byte.valueOf(h.substring(0, 2), 16);
-            }
-            return bytes;
-        }
-    };
-
     private static final <R> Function<String, R> WITH_BYTES(final Function<byte[], R> fn) {
-        return new Function<String, R>() {
-            @Override public R apply(String hex) {
-                return fn.apply(TO_BYTES.apply(hex));
-            }
-        };
+        return null;
     }
 
     private static final Function<String, Double> BANK_CONVESOR = WITH_BYTES(new Function<byte[], Double>() {
@@ -110,8 +92,6 @@ class PID<T> implements Command<T> {
             return ((bytes[0] * 256) + bytes[1]) / 100.0;
         }
     }));
-
-    public static final PID<Double> THROTTLE_POSITION = new PID<Double>("0111", "Oxygen sensors present", "%", RETURNS_PERCENTAGE);
 
     public static final PID<boolean[]> OXYGEN_SENSORS_PRESENT = new PID<boolean[]>("0113", "Oxygen sensors present", "", WITH_BYTES(new Function<byte[], boolean[]>() {
         @Override public boolean[] apply(byte[] bytes) {

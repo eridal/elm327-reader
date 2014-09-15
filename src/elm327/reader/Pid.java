@@ -5,9 +5,14 @@ public enum Pid {
     DistanceWithMalfuncionOff(
         "21", 1,
         "Distance traveled with malfunction indicator lamp (MIL) on",
-        0f, 65.535, "km"
-    );
+        0, 65535, "km"
+    ),
 
+    ThrottlePosition(
+        "11", 1,
+        "Throttle position",
+        0, 100, "%"
+    );
 
     public final String code;
     public final String desc;
@@ -15,7 +20,7 @@ public enum Pid {
 
     private Pid(String code, int byteSize,
                 String desc,
-                double min, double max, String unit) {
+                int min, int max, String unit) {
 
         this.code = code;
         this.desc = desc;

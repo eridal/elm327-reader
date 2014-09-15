@@ -63,22 +63,26 @@ public class Commands {
 
         static class Car<T> extends Read<T> {
 
-            private Car(String cmd, Function<String, T> parser) {
-                super(Obd2.DATA(cmd), parser);
+            private Car(Pid pid, Function<String, T> parser) {
+                super(Obd2.DATA(pid.code), parser);
             }
 
-            static class Position extends Car<Integer> {
-                private Position(String cmd) {
-                    super(cmd, Parsers.POSITION);
+            static class Position extends Car<Double> {
+
+                private Position(Pid pid) {
+                    super(pid, Parsers.POSITION);
                 }
+
+                static final Command<Double> Throttle = new Position(Pid.ThrottlePosition);
             }
 
             static class Distance extends Car<Integer> {
-                public static final Command<Integer> WITH_LAMP_ON = new Distance(Pid.DistanceWithMalfuncionOff);
 
-                Distance(Pid pid) {
-                    super(pid.code, Parsers.DISTANCE);
+                private Distance(Pid pid) {
+                    super(pid, Parsers.DISTANCE);
                 }
+
+                public static final Command<Integer> WithLampOn = new Distance(Pid.DistanceWithMalfuncionOff);
             }
         }
     }

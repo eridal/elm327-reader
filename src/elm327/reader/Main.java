@@ -39,7 +39,6 @@ public class Main {
         PID.FUEL_PRESSURE,
         PID.ENGINE_LOAD_VALUE,
         PID.ENGINE_COOLANT_TEMP,
-        PID.THROTTLE_POSITION,
 
         PID.AIR_FLOW_RATE,
         PID.BANK_1_SENSOR_1,
