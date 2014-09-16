@@ -5,13 +5,19 @@ import com.google.common.base.Strings;
 public class ResultParser {
 
     public static <T> Result<T> parse(String response, Command<T> command) {
-        String data;
         try {
-            data = extractData(response, command);
+            String data = extractData(response, command);
+
+            if ("?".equals(data)) {
+                return new Result.Unknown<T>(command);
+            }
+
+            T value = command.parse(data);
+            return new Result.Answer<T>(command, value);
+
         } catch(Exception e) {
             return new Result.Error<T>(command, e);
         }
-        return new Result.Response<T>(command, data);
     }
 
     private static <T> String extractData(String response, Command<T> command) throws Exception {

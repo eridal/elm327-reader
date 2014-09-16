@@ -2,46 +2,60 @@ package elm327.reader;
 
 interface Result<T> {
 
-    Command<T> getCommand();
-    T getData();
+    Command<T> command();
+    T data();
 
-    class Response<T> implements Result<T> {
+    abstract class ResultBase<T> implements Result<T> {
+
         private final Command<T> command;
-        private final T data;
 
-        Response(Command<T> command, String data) {
+        ResultBase(Command<T> command) {
             this.command = command;
-            this.data = command.parse(data);
         }
 
-        @Override public T getData() {
-            return data;
-        }
-
-        @Override public Command<T> getCommand() {
+        @Override public Command<T> command() {
             return command;
         }
     }
 
-    class Error<T> implements Result<T> {
-        private final Command<T> command;
+    class Answer<T> extends ResultBase<T> {
+        private final T data;
+
+        Answer(Command<T> command, T data) {
+            super(command);
+            this.data = data;
+        }
+
+        @Override public T data() {
+            return data;
+        }
+    }
+
+    class Unknown<T> extends ResultBase<T> {
+
+        Unknown(Command<T> command){
+            super(command);
+        }
+
+        @Override public T data() {
+            return null;
+        }
+    };
+
+    class Error<T> extends ResultBase<T> {
         public final Exception error;
 
         public Error(Command<T> command, Exception error) {
-            this.command = command;
+            super(command);
             this.error = error;
         }
 
-        @Override public T getData() {
+        @Override public T data() {
             return null;
         }
 
         public Exception getError() {
             return error;
-        }
-
-        @Override public Command<T> getCommand() {
-            return command;
         }
     }
 }

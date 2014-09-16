@@ -43,8 +43,7 @@ class Protocol {
     }
 
     public <T> T read(Command<T> command) {
-        Result<T> result = send(command);
-        return result.getData();
+        return send(command).data();
     }
 
     @SuppressWarnings("serial")
