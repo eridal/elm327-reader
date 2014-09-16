@@ -26,7 +26,9 @@ public class Debug {
 
     private void output(Map<String, Command<?>> values) {
         for (Map.Entry<String, Command<?>> header : values.entrySet()) {
-            output(header.getKey(), header.getValue());
+            String text = header.getKey();
+            Command<?> command = header.getValue();
+            output(text, command);
         }
     }
 
@@ -48,9 +50,12 @@ public class Debug {
             .build();
 
     private static final Map<String, Command<?>> PIDS = new ImmutableMap.Builder<String, Command<?>>()
-            .put("Vehicle.Speed", Commands.Read.Car.Speed.Vehicle)
-            .put("Position.Throttle", Commands.Read.Car.Position.Throttle)
-            .put("Distance.WithLampOn", Commands.Read.Car.Distance.WithLampOn)
+            .put("Speed", Pids.VehicleSpeed)
+            .put("Throttle", Pids.ThrottlePosition)
+            .put("EngineRPM", Pids.EngineRPM)
+            .put("EngineLoad", Pids.CalculatedEngineLoad)
+            .put("CoolantTemp", Pids.EngineCoolantTemperature)
+            .put("TimingAdvance", Pids.TimingAdvance)
             .build();
 
     public static void main(String[] args) {

@@ -4,7 +4,7 @@ public class Commands {
 
     private Commands() { }
 
-    interface Read {
+    static class Read {
 
         enum Computer implements Command<Float> {
 
@@ -51,64 +51,6 @@ public class Commands {
 
             @Override public String parse(String data) {
                 return data;
-            }
-        }
-
-        interface Car {
-
-            enum Position implements Command<Double> {
-                Throttle(Pid.ThrottlePosition);
-
-                private final Message message;
-
-                private Position(Pid pid) {
-                    message = Message.DATA(pid.code);
-                }
-
-                @Override public Message message() {
-                    return message;
-                }
-
-                @Override public Double parse(String data) {
-                    return Parsers.position(data);
-                }
-            }
-
-            enum Distance implements Command<Integer> {
-               WithLampOn(Pid.DistanceWithMalfuncionOff);
-
-               private final Message message;
-
-               private Distance(Pid pid) {
-                   message = Message.DATA(pid.code);
-               }
-
-               @Override public Message message() {
-                   return message;
-               }
-
-               @Override public Integer parse(String data) {
-                   return Parsers.distance(data);
-               }
-            }
-
-            enum Speed implements Command<Integer> {
-
-                Vehicle(Pid.VehicleSpeed);
-
-                private final Message message;
-
-                private Speed(Pid pid) {
-                    message = Message.DATA(pid.code);
-                }
-
-                @Override public Message message() {
-                    return message;
-                }
-
-                @Override public Integer parse(String data) {
-                    return Parsers.speed(data);
-                }
             }
         }
     }

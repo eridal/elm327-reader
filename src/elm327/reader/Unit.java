@@ -1,14 +1,25 @@
 package elm327.reader;
 
-public class Unit<T> {
+public enum Unit {
+    SCALAR(""),
+    PERCENT("%"),
+    DEGREE("°"),
+    SECONDS("seconds"),
+    MINUTES("minutes"),
+    CELCIUS("°C"),
+    KPA("kPa"),
+    PA("Pa"),
+    KM("Km"),
+    KM_H("Km/h"),
+    RPM("rpm"),
+    GRAMS_SEC("grams/sec"),
+    LIT_H("L/h"),
+    VOLTS("Volts"),
+    NM("Nm");
 
     public final String symbol;
 
-    Unit(String symbol) {
+    private Unit(String symbol) {
         this.symbol = symbol;
-    }
-
-    public Range<T> range(T min, T max) {
-        return new Range<T>(this, min, max);
     }
 }
