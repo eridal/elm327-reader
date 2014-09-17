@@ -1,7 +1,5 @@
 package elm327.reader;
 
-import com.google.common.base.Function;
-
 class PID<T> implements Command<T> {
 
     private static final <R> Function<String, R> WITH_BYTES(final Function<byte[], R> fn) {
@@ -139,5 +137,9 @@ class PID<T> implements Command<T> {
 
     @Override public Message message() {
         return null;
+    }
+
+    public interface Function<F, T> {
+        T apply(F from);
     }
 }

@@ -5,20 +5,19 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import com.google.common.base.Throwables;
-import com.google.common.collect.ImmutableMap;
 
 import elm327.reader.Protocol.InitializationException;
 
 public class Main {
 
-    private static Map<String, Mode> MODES = new ImmutableMap.Builder<String, Mode>()
-            .put("tcp", new TcpMode())
-            .put("file", new FileMode())
-            .build();
+    private static Map<String, Mode> MODES = new HashMap<String, Mode>();
+    static {
+        MODES.put("tcp", new TcpMode());
+        MODES.put("file", new FileMode());
+    }
 
     public static void main(String[] args) {
 
@@ -67,7 +66,7 @@ public class Main {
             Channel channel = runner.connect(params);
             proto = new Protocol(channel);
         } catch (IOException | InitializationException e) {
-            throw Throwables.propagate(e);
+            throw new RuntimeException(e);
         }
 
         // Device info

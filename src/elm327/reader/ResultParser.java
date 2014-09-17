@@ -1,6 +1,5 @@
 package elm327.reader;
 
-import com.google.common.base.Strings;
 
 public class ResultParser {
 
@@ -37,13 +36,13 @@ public class ResultParser {
 
     private static String[] split(String response) throws Exception {
 
-        if (Strings.isNullOrEmpty(response)) {
+        if (null == response || response.isEmpty()) {
             throw new EmptyResultException();
         }
 
         response = response.trim();
 
-        if (Strings.isNullOrEmpty(response)) {
+        if (null == response || response.isEmpty()) {
             throw new EmptyResultException();
         }
 

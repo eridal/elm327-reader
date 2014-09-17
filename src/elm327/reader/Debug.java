@@ -2,9 +2,8 @@ package elm327.reader;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.HashMap;
 import java.util.Map;
-
-import com.google.common.collect.ImmutableMap;
 
 import elm327.reader.Protocol.InitializationException;
 
@@ -39,24 +38,27 @@ public class Debug {
         );
     }
 
-    private static final Map<String, Command<?>> HEADERS = new ImmutableMap.Builder<String, Command<?>>()
-            .put("Device", Commands.Read.Info.DeviceName)
-            .put("Protocol", Commands.Read.Info.ProtocolName)
-            .build();
+    private static final Map<String, Command<?>> HEADERS = new HashMap<String, Command<?>>();
+    static {
+        HEADERS.put("Device", Commands.Read.Info.DeviceName);
+        HEADERS.put("Protocol", Commands.Read.Info.ProtocolName);
+    }
 
-    private static final Map<String, Command<?>> VALUES = new ImmutableMap.Builder<String, Command<?>>()
-            .put("Ignition", Commands.Read.Computer.Ignition)
-            .put("Voltage", Commands.Read.Computer.Voltage)
-            .build();
+    private static final Map<String, Command<?>> VALUES = new HashMap<String, Command<?>>();
+    static {
+        VALUES.put("Ignition", Commands.Read.Computer.Ignition);
+        VALUES.put("Voltage", Commands.Read.Computer.Voltage);
+    }
 
-    private static final Map<String, Command<?>> PIDS = new ImmutableMap.Builder<String, Command<?>>()
-            .put("Speed", Pids.VehicleSpeed)
-            .put("Throttle", Pids.ThrottlePosition)
-            .put("EngineRPM", Pids.EngineRPM)
-            .put("EngineLoad", Pids.CalculatedEngineLoad)
-            .put("CoolantTemp", Pids.EngineCoolantTemperature)
-            .put("TimingAdvance", Pids.TimingAdvance)
-            .build();
+    private static final Map<String, Command<?>> PIDS = new HashMap<String, Command<?>>();
+    static {
+        PIDS.put("Speed", Pids.VehicleSpeed);
+        PIDS.put("Throttle", Pids.ThrottlePosition);
+        PIDS.put("EngineRPM", Pids.EngineRPM);
+        PIDS.put("EngineLoad", Pids.CalculatedEngineLoad);
+        PIDS.put("CoolantTemp", Pids.EngineCoolantTemperature);
+        PIDS.put("TimingAdvance", Pids.TimingAdvance);
+    }
 
     public static void main(String[] args) {
 
