@@ -13,43 +13,32 @@ class Protocol {
 
     private final Channel channel;
 
-    public Protocol (Channel channel) throws InitializationException {
+    public Protocol (Channel channel) throws IOException {
         this(channel, DEFAULT_SETUP);
     }
 
-    public Protocol (final Channel channel, Command<?> ... setup) throws InitializationException {
+    public Protocol (final Channel channel, Command<?> ... setup) throws IOException {
         this.channel = channel;
         initialize(setup);
     }
 
-    public void initialize(Command<?> ... setup) throws InitializationException {
+    public void initialize(Command<?> ... setup) throws IOException {
         for (Command<?> cmd : setup) {
-            Result<?> result = send(cmd);
-            if (result instanceof Result.Error) {
-                Result.Error<?> resultError = (Result.Error<?>) result;
-                throw new InitializationException(resultError.getError());
-            }
+            send(cmd);
         }
     }
 
-    public <T> Result<T> send(Command<T> command) {
-        String response;
+    public <T> Result<T> send(Command<T> command) throws IOException {
+        String response = channel.send(command.message());
         try {
-            response = channel.send(command.message());
-        } catch (IOException e) {
+            return ResultParser.parse(response, command);
+        } catch (Exception e) {
             return new Result.Error<T>(command, e);
         }
-        return ResultParser.parse(response, command);
     }
 
-    public <T> T read(Command<T> command) {
+    public <T> T read(Command<T> command) throws IOException {
         return send(command).data();
     }
 
-    @SuppressWarnings("serial")
-    class InitializationException extends Exception {
-        InitializationException(Exception e) {
-            super(e);
-        }
-    }
 }

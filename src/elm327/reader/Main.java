@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import elm327.reader.Protocol.InitializationException;
-
 public class Main {
 
     private static Map<String, Mode> MODES = new HashMap<String, Mode>();
@@ -19,7 +17,7 @@ public class Main {
         MODES.put("file", new FileMode());
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
         if (args.length < 1) {
             showModesUsage();
@@ -58,14 +56,14 @@ public class Main {
         PID.TIMING_ADVANCE,
     };
 
-    private static void executeMode(Mode runner, String[] params) {
+    private static void executeMode(Mode runner, String[] params) throws Exception {
 
         Protocol proto;
 
         try {
             Channel channel = runner.connect(params);
             proto = new Protocol(channel);
-        } catch (IOException | InitializationException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
 

@@ -2,10 +2,9 @@ package elm327.reader;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-import elm327.reader.Protocol.InitializationException;
 
 public class Debug {
 
@@ -15,7 +14,7 @@ public class Debug {
         this.proto = proto;
     }
 
-    private void loop() {
+    private void loop() throws Exception {
         output(HEADERS);
         for (;;) {
             output(VALUES);
@@ -23,7 +22,7 @@ public class Debug {
         }
     }
 
-    private void output(Map<String, Command<?>> values) {
+    private void output(Map<String, Command<?>> values) throws Exception {
         for (Map.Entry<String, Command<?>> header : values.entrySet()) {
             String text = header.getKey();
             Command<?> command = header.getValue();
@@ -31,7 +30,7 @@ public class Debug {
         }
     }
 
-    private void output(String header, Command<?> cmd) {
+    private void output(String header, Command<?> cmd) throws Exception {
         Object result = proto.read(cmd);
         System.out.println(
             String.format("%s: %s", header, result)
@@ -79,12 +78,16 @@ public class Debug {
 
         try {
             proto = new Protocol(channel);
-        } catch (InitializationException e) {
+        } catch (IOException e) {
             System.out.println("ERROR: Protocol startup error");
             return;
         }
 
-        new Debug(proto).loop();
+        try {
+            new Debug(proto).loop();
+        } catch(Exception e) {
+
+        }
     }
 
     private static void printUsage() {
