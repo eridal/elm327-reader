@@ -25,9 +25,12 @@ class Channel {
 
     private String read() throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        boolean delimiterFound = false;
         for (;;) {
             if (reader.available() == 0 && buffer.size() > 0) {
-                break;
+                if (delimiterFound) {
+                    break;
+                }
             }
             int b = reader.read();
             if (b == -1) {
@@ -35,6 +38,7 @@ class Channel {
             }
             if (b == '>') {
                 if (buffer.size() == 0) {
+                    delimiterFound = true;
                     continue;
                 } else {
                     break;
