@@ -123,11 +123,18 @@ public class Reader {
         }
 
         public void print(Result<?> r) throws IOException {
+
             if (r instanceof Result.Error) {
-                print("error");
-            } else {
-                print(r.data());
+                print('e');
+                return;
             }
+
+            if (r instanceof Result.Unknown) {
+                print('?');
+                return;
+            }
+
+            print(r.data());
         }
 
         public void print(String s) throws IOException {
