@@ -115,7 +115,11 @@ public class Reader {
         }
 
         public void print(Object o) throws IOException {
-            print(String.valueOf(o));
+            if (o != null) {
+                print(String.valueOf(o));
+            } else {
+                print("");
+            }
         }
 
         public void print(Message m) throws IOException {

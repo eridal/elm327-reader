@@ -159,7 +159,7 @@ public class Results {
         }
 
         @Override public boolean isError() {
-            return false;
+            return true;
         }
     }
 

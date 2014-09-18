@@ -18,13 +18,11 @@ class Channel {
     }
 
     private void write(Message message) throws IOException {
-
         while (reader.available() > 0) {
             if (-1 == reader.read()) {
                 break;
             }
         }
-
         writter.write(message.getBytes());
         writter.write('\r');
         writter.flush();
@@ -32,10 +30,10 @@ class Channel {
 
     private String read() throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        boolean delimiterFound = false;
+        boolean obdsim = false;
         for (;;) {
             if (reader.available() == 0 && buffer.size() > 0) {
-                if (delimiterFound) {
+                if (obdsim) {
                     break;
                 }
             }
@@ -45,11 +43,14 @@ class Channel {
             }
             if (b == '>') {
                 if (buffer.size() == 0) {
-                    delimiterFound = true;
+                    obdsim = true;
                     continue;
                 } else {
                     break;
                 }
+            }
+            if ((b == '\n' || b == '\r') && buffer.size() == 0) {
+                continue;
             }
             buffer.write(b);
         }
@@ -58,7 +59,7 @@ class Channel {
 
     public String send(Message message) throws IOException {
         write(message);
-        String result = read();
-        return result;
+        String response = read();
+        return response.trim();
     }
 }
