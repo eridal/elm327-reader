@@ -1,6 +1,7 @@
 package elm327.reader;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,11 +14,17 @@ class Channel {
 
     public Channel(InputStream reader, OutputStream writter) {
         this.reader = new BufferedInputStream(reader);
-        this.writter = writter;
+        this.writter = new BufferedOutputStream(writter);
     }
 
     private void write(String message) throws IOException {
-        flush();
+
+        while (reader.available() > 0) {
+            if (-1 == reader.read()) {
+                break;
+            }
+        }
+
         writter.write(message.getBytes());
         writter.write('\r');
         writter.flush();
@@ -49,17 +56,9 @@ class Channel {
         return buffer.toString();
     }
 
-    private void flush() throws IOException {
-        while (reader.available() > 0) {
-            int b = reader.read();
-            if (b == -1) {
-                break;
-            }
-        }
-    }
-
     public String send(Message message) throws IOException {
         write(message.code());
-        return read();
+        String result = read();
+        return result;
     }
 }
