@@ -28,19 +28,22 @@ class Protocol {
                 );
             }
         }
-
     }
 
     public <T> Result<T> send(Command<T> command) throws IOException {
-
+        Result<T> result;
         Message message = command.message();
-        String response = channel.send(message);
 
-        try {
-            return Results.parse(response, command);
-        } catch (Exception e) {
-            return Results.createError(command, e);
+        do {
+            String response = channel.send(message);
+            result = ResultParser.parse(response, command);
+        } while (result instanceof Results.RetryCommand);
+
+        if (null == result) {
+            result = new Results.NoData<T>(command);
         }
+
+        return result;
     }
 
     public <T> T read(Command<T> command) throws IOException {
