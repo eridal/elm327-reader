@@ -19,13 +19,16 @@ class Protocol {
 
     public Protocol (final Channel channel, Command<?> ... setup) throws IOException {
         this.channel = channel;
-        initialize(setup);
-    }
 
-    public void initialize(Command<?> ... setup) throws IOException {
         for (Command<?> cmd : setup) {
-            send(cmd);
+            Result<?> result  = send(cmd);
+            if (result.isError()) {
+                throw new ProtocolException(
+                    String.format("Init command error: %s", cmd.message())
+                );
+            }
         }
+
     }
 
     public <T> Result<T> send(Command<T> command) throws IOException {
@@ -36,7 +39,7 @@ class Protocol {
         try {
             return Results.parse(response, command);
         } catch (Exception e) {
-            return new Results.Error<T>(command, e);
+            return Results.createError(command, e);
         }
     }
 

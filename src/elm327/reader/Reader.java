@@ -119,7 +119,7 @@ public class Reader {
         }
 
         public void print(Message m) throws IOException {
-            print(m.code);
+            print(m.toString());
         }
 
         public void print(Result<?> r) throws IOException {

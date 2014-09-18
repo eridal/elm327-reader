@@ -17,7 +17,7 @@ class Channel {
         this.writter = new BufferedOutputStream(writter);
     }
 
-    private void write(String message) throws IOException {
+    private void write(Message message) throws IOException {
 
         while (reader.available() > 0) {
             if (-1 == reader.read()) {
@@ -57,7 +57,7 @@ class Channel {
     }
 
     public String send(Message message) throws IOException {
-        write(message.code);
+        write(message);
         String result = read();
         return result;
     }
