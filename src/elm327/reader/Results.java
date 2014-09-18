@@ -6,8 +6,10 @@ public class Results {
         try {
             String data = extractData(response, command);
 
-            if ("?".equals(data)) {
-                return new Results.Unknown<T>(command);
+            for (Response r : Response.values()) {
+                if (r.matches(data)) {
+                    return r.createResult(command, data);
+                }
             }
 
             T value = command.parse(data);
@@ -16,6 +18,33 @@ public class Results {
         } catch (ResultException e) {
             return new Results.Error<T>(command, e);
         }
+    }
+
+    enum Response {
+
+        UNKNOWN("?") {
+            @Override public <T> Result<T> createResult(Command<T> command, String data) {
+                return new Results.Unknown<T>(command);
+            }
+        },
+
+        NO_DATA("NO DATA") {
+            @Override public <T> Result<T> createResult(Command<T> command, String data) {
+                return new Results.NoData<T>(command);
+            }
+        };
+
+        private final String result;
+
+        Response(String result) {
+            this.result = result;
+        }
+
+        public boolean matches(String data) {
+            return result.equals(data);
+        }
+
+        abstract <T> Result<T> createResult(Command<T> command, String data);
     }
 
     private static <T> String extractData(String response, Command<T> command) throws ResultException {
@@ -85,6 +114,21 @@ public class Results {
     static class Unknown<T> extends ResultAbstract<T> {
 
         private Unknown(Command<T> command) {
+            super(command);
+        }
+
+        @Override public T data() {
+            return null;
+        }
+
+        @Override public boolean isError() {
+            return true;
+        }
+    };
+
+    static class NoData<T> extends ResultAbstract<T> {
+
+        private NoData(Command<T> command) {
             super(command);
         }
 
