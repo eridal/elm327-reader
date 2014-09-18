@@ -8,14 +8,14 @@ public class ResultParser {
             String data = extractData(response, command);
 
             if ("?".equals(data)) {
-                return new Result.Unknown<T>(command);
+                return new Results.Unknown<T>(command);
             }
 
             T value = command.parse(data);
-            return new Result.Answer<T>(command, value);
+            return new Results.Answer<T>(command, value);
 
         } catch(Exception e) {
-            return new Result.Error<T>(command, e);
+            return new Results.Error<T>(command, e);
         }
     }
 

@@ -33,7 +33,7 @@ class Protocol {
         try {
             return ResultParser.parse(response, command);
         } catch (Exception e) {
-            return new Result.Error<T>(command, e);
+            return new Results.Error<T>(command, e);
         }
     }
 

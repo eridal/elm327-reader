@@ -124,12 +124,12 @@ public class Reader {
 
         public void print(Result<?> r) throws IOException {
 
-            if (r instanceof Result.Error) {
+            if (r instanceof Results.Error) {
                 print('e');
                 return;
             }
 
-            if (r instanceof Result.Unknown) {
+            if (r instanceof Results.Unknown) {
                 print('?');
                 return;
             }
