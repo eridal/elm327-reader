@@ -9,7 +9,7 @@ class Pid<T> implements Command<T> {
     Pid(String code, Unit unit, Parser<T> parser) {
         this.unit = unit;
         this.parser = parser;
-        message = Message.DATA(code);
+        message = Messages.DATA(code);
     }
 
     @Override public Message message() {

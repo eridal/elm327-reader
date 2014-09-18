@@ -14,7 +14,7 @@ public class Commands {
             private final Message message;
 
             Computer(String code) {
-                message = Message.AT(code);
+                message = Messages.AT(code);
             }
 
             @Override public Message message() {
@@ -42,7 +42,7 @@ public class Commands {
             private final Message message;
 
             private Info(String code) {
-                message = Message.AT(code);
+                message = Messages.AT(code);
             }
 
             @Override public Message message() {
@@ -63,7 +63,7 @@ public class Commands {
         private final Message message;
 
         private Send(String cmd) {
-            message = Message.AT(cmd);
+            message = Messages.AT(cmd);
         }
 
         @Override public Message message() {
@@ -87,7 +87,7 @@ public class Commands {
         private final Message message;
 
         private Configure(Param param, Value value) {
-            message = Message.AT(param.message(value));
+            message = Messages.AT(param.message(value));
         }
 
         @Override public Boolean parse(String data) {

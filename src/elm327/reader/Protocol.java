@@ -29,9 +29,12 @@ class Protocol {
     }
 
     public <T> Result<T> send(Command<T> command) throws IOException {
-        String response = channel.send(command.message());
+
+        Message message = command.message();
+        String response = channel.send(message);
+
         try {
-            return ResultParser.parse(response, command);
+            return Results.parse(response, command);
         } catch (Exception e) {
             return new Results.Error<T>(command, e);
         }
