@@ -16,13 +16,13 @@ class Parsers {
         int index = 0;
         int length = data.length();
 
-        for (; b < maxSize && index < length; index++) {
+        for (; b < maxSize && index < length; index += 2) {
 
             if (data.charAt(index) == ' ') {
                 continue;
             }
 
-            String hex = data.substring(index, 2);
+            String hex = data.substring(index, index + 2);
             bytes[b++] = Byte.valueOf(hex, 16);
         }
 
