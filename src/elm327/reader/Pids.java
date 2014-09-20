@@ -22,7 +22,7 @@ public class Pids {
     static final Pid<Integer> VehicleSpeed = new Pid<Integer>("DC", Unit.KM_H, Parsers.FIRST_BYTE);
     static final Pid<Double> TimingAdvance = new Pid<Double>("0E", Unit.DEGREE, new Parser<Double>(-64.0, 63.5) {
         @Override public Double parse(String data) {
-            byte[] bytes = Parsers.toBytes(data, 1);
+            short[] bytes = Parsers.toBytes(data, 1);
             return (bytes[0] - 128) / 2.0;
         };
     });

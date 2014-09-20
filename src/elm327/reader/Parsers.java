@@ -1,42 +1,41 @@
 package elm327.reader;
 
-import java.util.Arrays;
 
 class Parsers {
 
     private Parsers() { }
 
-    static byte[] toBytes(String data, int maxSize) {
+    static short[] toBytes(String data, int bytesSize) {
 
-        assert maxSize > 0;
+        if (bytesSize <= 0) {
+            throw new IllegalArgumentException("illegal bytesSize");
+        }
 
-        byte[] bytes = new byte[maxSize];
+        short[] bytes = new short[bytesSize];
+        int b = bytesSize;
+        int index = data.length() -2;
 
-        int b = 0;
-        int index = 0;
-        int length = data.length();
+        for (; b > 0 && index > 0; index -= 2, b -= 1) {
 
-        for (; b < maxSize && index < length; index += 2) {
-
-            if (data.charAt(index) == ' ') {
-                continue;
+            while (data.charAt(index + 1) == ' ') {
+                index -= 1;
             }
 
             String hex = data.substring(index, index + 2);
-            bytes[b++] = Byte.valueOf(hex, 16);
+            bytes[b - 1] = Short.parseShort(hex, 16);
         }
 
-        if (b < maxSize) {
-            return Arrays.copyOf(bytes, b);
-        } else {
-            return bytes;
+        if (b > 0) {
+            throw new NumberFormatException();
         }
+
+        return bytes;
     };
 
     // A*100/255
     static final Parser<Double> PERCENT = new Parser<Double>(0.0, 100.0) {
         @Override public Double parse(String data) {
-            byte[] bytes = toBytes(data, 1);
+            short[] bytes = toBytes(data, 1);
             return (bytes[0] * 100) / 255.0;
         }
     };
@@ -44,7 +43,7 @@ class Parsers {
     // (A-128) * 100/128
     static final Parser<Double> PERCENT_TRIM = new Parser<Double>(-100.0, 99.22) {
         @Override public Double parse(String data) {
-            byte[] bytes = toBytes(data, 1);
+            short[] bytes = toBytes(data, 1);
             return ((bytes[0] - 128) * 100) / 128.0;
         }
     };
@@ -52,7 +51,7 @@ class Parsers {
     // (B-128)*100/128
     public static Parser<Double> PERCENT_TRIM_B = new Parser<Double>(-100.0, 99.22) {
         @Override Double parse(String data) {
-            byte[] bytes = toBytes(data, 2);
+            short[] bytes = toBytes(data, 2);
             return (bytes[1] - 128) * 100 / 128.0;
         }
     };
@@ -60,7 +59,7 @@ class Parsers {
     // A-125
     static final Parser<Integer> TORQUE = new Parser<Integer>(-125, 125) {
         @Override Integer parse(String data) {
-            byte[] bytes = toBytes(data, 1);
+            short[] bytes = toBytes(data, 1);
             return bytes[0] - 125;
         }
     };
@@ -68,7 +67,7 @@ class Parsers {
     // A-40
     static final Parser<Integer> TEMPERATURE = new Parser<Integer>(-40, 215) {
         @Override Integer parse(String data) {
-            byte[] bytes = toBytes(data, 1);
+            short[] bytes = toBytes(data, 1);
             return bytes[0] - 40;
         }
     };
@@ -76,7 +75,7 @@ class Parsers {
     // A
     static final Parser<Integer> SPEED = new Parser<Integer>(0, 255) {
         @Override Integer parse(String data) {
-            byte[] bytes = toBytes(data, 1);
+            short[] bytes = toBytes(data, 1);
             return (int) bytes[0];
         }
     };
@@ -84,7 +83,7 @@ class Parsers {
     // A*3
     public static final Parser<Integer> KPA_GAUGE = new Parser<Integer>(0, 765) {
         @Override Integer parse(String data) {
-            byte[] bytes = toBytes(data, 1);
+            short[] bytes = toBytes(data, 1);
             return bytes[0] * 3;
         }
     };
@@ -92,7 +91,7 @@ class Parsers {
     // ((A*256)+B)/4
     public static final Parser<Double> RPM = new Parser<Double>(0.0, 16383.75) {
         @Override Double parse(String data) {
-            byte[] bytes = toBytes(data, 2);
+            short[] bytes = toBytes(data, 2);
             return ((bytes[0] * 256) + bytes[1]) / 4.0;
         }
     };
@@ -100,7 +99,7 @@ class Parsers {
     // FIRST_BYTE
     public static final Parser<Integer> FIRST_BYTE = new Parser<Integer>(0, 255) {
         @Override Integer parse(String data) {
-            byte[] bytes = toBytes(data, 1);
+            short[] bytes = toBytes(data, 1);
             return (int) bytes[0];
         }
     };
@@ -108,7 +107,7 @@ class Parsers {
     // (A*256)+B
     public static final Parser<Integer> TO_SHORT = new Parser<Integer>(0, 65535) {
         @Override Integer parse(String data) {
-            byte[] bytes = toBytes(data, 2);
+            short[] bytes = toBytes(data, 2);
             return bytes[0] * 256 + bytes[1];
         }
     };
