@@ -4,30 +4,21 @@ import java.io.IOException;
 
 class Protocol {
 
-    static final Command<?>[] DEFAULT_SETUP = {
-        Commands.Send.FullReset,
-        Commands.Configure.Disable_Echo,
-        Commands.Configure.Disable_LineFeeds,
-        Commands.Configure.Disable_PrintSpaces,
-    };
-
     private final Channel channel;
 
-    public Protocol (Channel channel) throws IOException {
-        this(channel, DEFAULT_SETUP);
+    public Protocol (final Channel channel) throws IOException {
+        this.channel = channel;
+        configure();
     }
 
-    public Protocol (final Channel channel, Command<?> ... setup) throws IOException {
-        this.channel = channel;
-
-        for (Command<?> cmd : setup) {
-            Result<?> result  = send(cmd);
-            if (result.isError()) {
-                throw new ProtocolException(
-                    String.format("Init command error: %s", cmd.message())
-                );
-            }
-        }
+    private void configure() throws IOException {
+        read(Commands.Send.FullReset);
+        read(Commands.Configure.Disable_Echo);
+        read(Commands.Configure.Disable_LineFeeds);
+        read(Commands.Configure.Disable_PrintSpaces);
+        // 0100
+        // 0120
+        // 0140
     }
 
     public <T> Result<T> send(Command<T> command) throws IOException {
