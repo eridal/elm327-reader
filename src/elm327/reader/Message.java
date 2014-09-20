@@ -17,6 +17,6 @@ class Message {
     }
 
     public boolean hasCode(String code) {
-        return this.code.equals(code);
+        return code != null && code.startsWith(this.code);
     }
 }
