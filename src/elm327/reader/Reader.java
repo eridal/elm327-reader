@@ -11,19 +11,24 @@ public class Reader {
     private static final Command<?> PIDS[] = {
         Pids.CalculatedEngineLoad,
         Pids.EngineCoolantTemperature,
+        /*
         Pids.ShortTermFuel_Bank_1,
         Pids.LongTermFuel_Bank_1,
         Pids.ShortTermFuel_Bank_2,
         Pids.LongTermFuel_Bank_2,
         Pids.FuelPressure,
         Pids.IntakeManifoldAbsolutePressure,
+        */
         Pids.EngineRPM,
         Pids.VehicleSpeed,
+        /*
         Pids.TimingAdvance,
         Pids.IntakeAirTemperature,
         Pids.MAF_AirFlowRate,
+        */
         Pids.ThrottlePosition,
         Pids.RunTimeSinceEngineStart,
+        /*
         Pids.DistanceTraveledWithMalFunctionIndicatorLamp,
         Pids.FuelRailPressure_RelativoToManifoldVacuum,
         Pids.FuelRailPressure,
@@ -61,6 +66,7 @@ public class Reader {
         Pids.DriversDemandEngine_PercentTorque,
         Pids.ActualEngine_PercentTorque,
         Pids.EngineReferenceTorque,
+        */
     };
 
     public static void main(String[] args) {
