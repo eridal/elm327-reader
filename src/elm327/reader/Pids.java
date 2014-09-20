@@ -19,7 +19,7 @@ public class Pids {
 
     static final Pid<Double> EngineRPM = new Pid<Double>("0C", Unit.RPM, Parsers.RPM);
 
-    static final Pid<Integer> VehicleSpeed = new Pid<Integer>("DC", Unit.KM_H, Parsers.FIRST_BYTE);
+    static final Pid<Integer> VehicleSpeed = new Pid<Integer>("0D", Unit.KM_H, Parsers.FIRST_BYTE);
     static final Pid<Double> TimingAdvance = new Pid<Double>("0E", Unit.DEGREE, new Parser<Double>(-64.0, 63.5) {
         @Override public Double parse(String data) {
             short[] bytes = Parsers.toBytes(data, 1);
