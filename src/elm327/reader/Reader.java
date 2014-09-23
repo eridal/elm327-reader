@@ -20,7 +20,7 @@ public class Reader {
         PIDS.put("fuel.short.1", Pids.ShortTermFuel_Bank_1);
         PIDS.put("fuel.long.1" , Pids.LongTermFuel_Bank_1);
         PIDS.put("fuel.short.2", Pids.ShortTermFuel_Bank_2);
-        PIDS.put("fuel.long.1" , Pids.LongTermFuel_Bank_2);
+        PIDS.put("fuel.long.2" , Pids.LongTermFuel_Bank_2);
         PIDS.put("fuel.pres", Pids.FuelPressure);
         PIDS.put("fuel.rail.pres.1", Pids.FuelRailPressure);
         PIDS.put("fuel.rail.pres.2", Pids.FuelRailPressure_RelativoToManifoldVacuum);
@@ -36,8 +36,8 @@ public class Reader {
         PIDS.put("codes.warmups", Pids.NumbersOfWarmUpsSinceCodesCleared);
         PIDS.put("codes.dist.warns", Pids.DistanceTraveledWithMalFunctionIndicatorLamp);
         PIDS.put("codes.dist.clear", Pids.DistanceTraveledSinceCodesCleared);
-        PIDS.put("barom", Pids.BarometricPressure);
         /*
+        PIDS.put("barom", Pids.BarometricPressure);
         PIDS.put("", Pids.CatalystTemperature_Bank1_Sensor1);
         PIDS.put("", Pids.CatalystTemperature_Bank2_Sensor1);
         PIDS.put("", Pids.CatalystTemperature_Bank1_Sensor2);
