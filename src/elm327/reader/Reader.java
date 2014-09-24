@@ -5,12 +5,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class Reader {
 
-    private static final Map<String, Command<?>> PIDS = new HashMap<String, Command<?>>();
+    private static final Map<String, Command<?>> PIDS = new TreeMap<String, Command<?>>();
     static {
         PIDS.put("speed", Pids.VehicleSpeed);
         PIDS.put("throttle", Pids.ThrottlePosition);
@@ -19,53 +19,10 @@ public class Reader {
         PIDS.put("cooleant.temp", Pids.EngineCoolantTemperature);
         PIDS.put("fuel.short.1", Pids.ShortTermFuel_Bank_1);
         PIDS.put("fuel.long.1" , Pids.LongTermFuel_Bank_1);
-        PIDS.put("fuel.short.2", Pids.ShortTermFuel_Bank_2);
-        PIDS.put("fuel.long.2" , Pids.LongTermFuel_Bank_2);
-        PIDS.put("fuel.pres", Pids.FuelPressure);
-        PIDS.put("fuel.rail.pres.1", Pids.FuelRailPressure);
-        PIDS.put("fuel.rail.pres.2", Pids.FuelRailPressure_RelativoToManifoldVacuum);
         PIDS.put("intake.pres", Pids.IntakeManifoldAbsolutePressure);
         PIDS.put("intake.temp", Pids.IntakeAirTemperature);
         PIDS.put("timing", Pids.TimingAdvance);
         PIDS.put("maf.flow", Pids.MAF_AirFlowRate);
-        PIDS.put("runtime", Pids.RunTimeSinceEngineStart);
-        PIDS.put("egr.error", Pids.EGR_Error);
-        PIDS.put("egr.cmd", Pids.CommandedEGR);
-        PIDS.put("evap.purge", Pids.CommandedEvaporativePurge);
-        PIDS.put("evap.pres", Pids.Evap_SystemVaporPressure);
-        PIDS.put("codes.warmups", Pids.NumbersOfWarmUpsSinceCodesCleared);
-        PIDS.put("codes.dist.warns", Pids.DistanceTraveledWithMalFunctionIndicatorLamp);
-        PIDS.put("codes.dist.clear", Pids.DistanceTraveledSinceCodesCleared);
-        /*
-        PIDS.put("barom", Pids.BarometricPressure);
-        PIDS.put("", Pids.CatalystTemperature_Bank1_Sensor1);
-        PIDS.put("", Pids.CatalystTemperature_Bank2_Sensor1);
-        PIDS.put("", Pids.CatalystTemperature_Bank1_Sensor2);
-        PIDS.put("", Pids.CatalystTemperature_Bank2_Sensor2);
-        PIDS.put("", Pids.ControlModuleVoltage);
-        PIDS.put("", Pids.AbsoluteLoadValue);
-        PIDS.put("", Pids.CommandEquivalenceRratio);
-        PIDS.put("", Pids.AmbientAirTemperature);
-        PIDS.put("", Pids.TimeRunWithMIL_ON);
-        PIDS.put("", Pids.TimeSinceTroubleCodesCleared);
-        PIDS.put("", Pids.AbsoluteEvapSystemVaporPressure);
-        PIDS.put("", Pids.EvapSystemVaporPressure);
-        PIDS.put("", Pids.ShortTermSecondaryOxygenSensorTrim_Bank_1);
-        PIDS.put("", Pids.ShortTermSecondaryOxygenSensorTrim_Bank_3);
-        PIDS.put("", Pids.LongTermSecondaryOxygenSensorTrim_Bank_1);
-        PIDS.put("", Pids.LongTermSecondaryOxygenSensorTrim_Bank_3);
-        PIDS.put("", Pids.ShortTermSecondaryOxygenSensorTrim_Bank_2);
-        PIDS.put("", Pids.ShortTermSecondaryOxygenSensorTrim_Bank_4);
-        PIDS.put("", Pids.LongTermSecondaryOxygenSensorTrim_Bank_2);
-        PIDS.put("", Pids.LongTermSecondaryOxygenSensorTrim_Bank_4);
-        PIDS.put("", Pids.FuelRailPressure_Absolute);
-        PIDS.put("", Pids.EngineOilTemperature);
-        PIDS.put("", Pids.FuelInjectionTiming);
-        PIDS.put("", Pids.EngineFuelRate);
-        PIDS.put("", Pids.DriversDemandEngine_PercentTorque);
-        PIDS.put("", Pids.ActualEngine_PercentTorque);
-        PIDS.put("", Pids.EngineReferenceTorque);
-        */
     }
 
     public static void main(String[] args) {
@@ -90,7 +47,7 @@ public class Reader {
 
         out.print("time");
 
-        for (String key: PIDS.keySet()) {
+        for (String key : PIDS.keySet()) {
             out.print(key);
         }
 
@@ -124,10 +81,6 @@ public class Reader {
             } else {
                 print("n");
             }
-        }
-
-        public void print(Message m) throws IOException {
-            print(m.toString());
         }
 
         public void print(Result<?> r) throws IOException {
