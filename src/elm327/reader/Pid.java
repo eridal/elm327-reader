@@ -1,6 +1,6 @@
 package elm327.reader;
 
-class Pid<T> implements Command<T> {
+class Pid<T extends Comparable<T>> implements Command<T> {
 
     public final Message message;
     public final Unit unit;
@@ -17,6 +17,6 @@ class Pid<T> implements Command<T> {
     }
 
     @Override public T parse(String data) {
-        return parser.parse(data);
+        return parser.valueOf(data);
     }
 }
