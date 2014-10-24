@@ -4,9 +4,9 @@ public class Commands {
 
     private Commands() { }
 
-    static class Read {
+    public static class Read {
 
-        enum Computer implements Command<Float> {
+        public static enum Computer implements Command<Float> {
 
             Voltage("RV"),
             Ignition("IGN");
@@ -33,7 +33,7 @@ public class Commands {
             }
         }
 
-        enum Info implements Command<String> {
+        public static enum Info implements Command<String> {
             DeviceName("@1"),
             DeviceIdentifier("@2"),
             ProtocolName("DP"),
@@ -55,7 +55,7 @@ public class Commands {
         }
     }
 
-    enum Send implements Command<String> {
+    public static enum Send implements Command<String> {
         FullReset("Z"),
         WarmStart("WS"),
         SetDefaults("D");
@@ -75,7 +75,7 @@ public class Commands {
         }
     }
 
-    enum Configure implements Command<Boolean> {
+    public static enum Configure implements Command<Boolean> {
 
         Disable_Echo(Param.Echo, Value.NO),
         Disable_PrintSpaces(Param.PrintSpaces, Value.NO),

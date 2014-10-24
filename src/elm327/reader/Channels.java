@@ -7,13 +7,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 
-class Channels {
-    
+public class Channels {
+
+    private Channels() { }
+
     public static Channel fromFile(File file) throws FileNotFoundException {
         return new Channel(new FileInputStream(file),
                            new FileOutputStream(file));
     }
-    
+
     public static Channel fromSocket(Socket socket) throws IOException {
         return new Channel(socket.getInputStream(), socket.getOutputStream());
     }

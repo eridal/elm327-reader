@@ -1,6 +1,6 @@
 package elm327.reader;
 
-class Pid<T extends Comparable<T>> implements Command<T> {
+public class Pid<T extends Comparable<T>> implements Command<T> {
 
     public final Message message;
     public final Unit unit;

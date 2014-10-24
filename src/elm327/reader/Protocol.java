@@ -2,7 +2,7 @@ package elm327.reader;
 
 import java.io.IOException;
 
-class Protocol {
+public class Protocol {
 
     private final Channel channel;
 
