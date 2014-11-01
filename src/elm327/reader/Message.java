@@ -1,6 +1,6 @@
 package elm327.reader;
 
-class Message {
+public class Message {
 
     private final String code;
 
