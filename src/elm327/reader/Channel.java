@@ -24,6 +24,7 @@ public class Channel {
             }
         }
         writter.write(message.getBytes());
+        writter.write('1');
         writter.write('\r');
         writter.flush();
     }
