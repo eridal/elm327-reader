@@ -40,12 +40,4 @@ public class Protocol {
     public <T> T read(Command<T> command) throws IOException {
         return send(command).data();
     }
-
-    public void setFastBit(boolean fastBit) {
-        channel.fastBit = fastBit;
-    }
-
-    public boolean getFastBit() {
-        return channel.fastBit;
-    }
 }

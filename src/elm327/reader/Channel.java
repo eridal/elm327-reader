@@ -17,8 +17,6 @@ public class Channel {
         this.writter = new BufferedOutputStream(writter);
     }
 
-    boolean fastBit = false;
-
     private void write(Message message) throws IOException {
         while (reader.available() > 0) {
             if (-1 == reader.read()) {
@@ -26,9 +24,6 @@ public class Channel {
             }
         }
         writter.write(message.getBytes());
-        if (fastBit) {
-            writter.write('1');
-        }
         writter.write('\r');
         writter.flush();
     }

@@ -7,6 +7,6 @@ class Messages {
     }
 
     static Message DATA(String command) {
-        return new Message("01" + command);
+        return new Message("01" + command + "1");
     }
 }
