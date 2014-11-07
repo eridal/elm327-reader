@@ -31,14 +31,21 @@ public class Protocol {
         } while (result instanceof Results.RetryCommand);
 
         if (null == result) {
-            result = new Results.NoData<T>(command);
+            return new Results.NoData<T>(command);
+        } else {
+            return result;
         }
-
-        return result;
     }
 
     public <T> T read(Command<T> command) throws IOException {
         return send(command).data();
     }
 
+    public void setFastBit(boolean fastBit) {
+        channel.fastBit = fastBit;
+    }
+
+    public boolean getFastBit() {
+        return channel.fastBit;
+    }
 }
