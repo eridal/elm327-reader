@@ -9,4 +9,8 @@ class Messages {
     static Message DATA(String command) {
         return new Message("01" + command + "1");
     }
+    
+    static Message DTC(){
+    	return new Message("03");
+    }
 }

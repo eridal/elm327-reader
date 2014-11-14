@@ -125,4 +125,15 @@ public class Commands {
             }
         }
     }
+
+    public class LeerError implements Command<String>{
+		@Override public Message message() {
+			return  Messages.DTC();
+		}
+
+		@Override public String parse(String data) {
+			return data;
+		}
+    	
+    }
 }
