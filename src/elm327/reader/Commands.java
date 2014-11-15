@@ -180,8 +180,7 @@ public class Commands {
                 case 2: return '2';
                 case 3: return '3';
                 }
-                return 'X';
-                // throw new IllegalArgumentException();
+                throw new IllegalArgumentException();
             }
         };
 
