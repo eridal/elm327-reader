@@ -9,8 +9,12 @@ class Messages {
     static Message DATA(String command) {
         return new Message("01" + command + "1");
     }
-    
-    static Message DTC(){
-    	return new Message("03");
+
+    static Message readDTC() {
+        return new Message("03");
+    }
+
+    static Message clearDTC() {
+        return new Message("04");
     }
 }

@@ -41,6 +41,15 @@ class ResultParser {
             }
         }
 
+        if (fragments.length > 1 && command instanceof MultiFrameCommand) {
+            StringBuilder sb = new StringBuilder();
+            for (String f : fragments) {
+                sb.append(f);
+                sb.append('\n');
+            }
+            return sb.toString();
+        }
+
         throw new ResultException();
     }
 

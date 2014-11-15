@@ -1,5 +1,8 @@
 package elm327.reader;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Commands {
 
     private Commands() { }
@@ -126,14 +129,85 @@ public class Commands {
         }
     }
 
-    public class LeerError implements Command<String>{
-		@Override public Message message() {
-			return  Messages.DTC();
-		}
+    public static class Errors {
 
-		@Override public String parse(String data) {
-			return data;
-		}
-    	
+        private Errors() {
+            throw new IllegalStateException();
+        }
+
+        public static final Command<String[]> Read = new ReadErrorCommand<String[]>(Messages.readDTC()) {
+
+            @Override public String[] parse(String data) {
+                final String[] lines = data.split("\n+");
+                final List<String> result = new ArrayList<>();
+
+                for (String line : lines) {
+                    for (int i = 2, len = line.length(); i < len; i += 4) {
+                        final String head = line.substring(i, i + 1);
+                        final String tail = line.substring(i + 1, i + 4);
+
+                        if ("000".equals(tail)) {
+                            continue;
+                        }
+                        final int first = Integer.parseInt(head, 16);
+                        final char firstChar = firstChar(first);
+                        final char secondChar = secondChar(first);
+                        final String errorCode = String.format("%c%c%s", firstChar, secondChar, tail);
+
+                        result.add(errorCode);
+                    }
+                }
+
+                return result.toArray(new String[0]);
+            }
+
+            private char firstChar(int hex) {
+                int b =  hex / 4;
+                switch (b) {
+                case 0: return 'P';
+                case 1: return 'C';
+                case 2: return 'B';
+                case 3: return 'U';
+                }
+                throw new IllegalArgumentException();
+            }
+
+            private char secondChar(int hex) {
+                int b = hex % 4;
+                switch (b) {
+                case 0: return '0';
+                case 1: return '1';
+                case 2: return '2';
+                case 3: return '3';
+                }
+                return 'X';
+                // throw new IllegalArgumentException();
+            }
+        };
+
+        public static final Command<Void> Clear = new ErrorCommand<Void>(Messages.clearDTC()) {
+            @Override public Void parse(String data) {
+                return null;
+            }
+        };
+
+        private static abstract class ReadErrorCommand<T> extends ErrorCommand<T> implements MultiFrameCommand {
+            ReadErrorCommand(Message message) {
+                super(message);
+            }
+        }
+
+        private static abstract class ErrorCommand<T> implements Command<T> {
+
+            final Message message;
+
+            private ErrorCommand(Message message) {
+                this.message = message;
+            }
+
+            @Override public Message message() {
+                return  message;
+            }
+        }
     }
 }
