@@ -1,10 +1,15 @@
 package elm327.reader;
 
 import java.io.IOException;
+import java.net.Socket;
 
 public class Protocol {
 
     private final Channel channel;
+
+    public Protocol (final Socket socket) throws IOException {
+        this(Channels.fromSocket(socket));
+    }
 
     public Protocol (final Channel channel) throws IOException {
         this.channel = channel;
